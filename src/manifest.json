@@ -1,0 +1,47 @@
+{
+    "manifest_version": 2,
+    "name": "Kayo Reddit Sidebar",
+    "version": "1.0.0",
+    "description": "A browser extension that adds a sidebar to Kayo that loads Reddit comments from a specific thread.",
+    "permissions": [
+        "activeTab",
+        "*://*.kayosports.com.au/*"
+    ],
+    "commands": {
+        "toggle-sidebar": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Q",
+                "mac": "MacCtrl+Shift+K"
+            },
+            "description": "Toggle Kayo Reddit Sidebar"
+        }
+    },
+    "content_security_policy": "script-src 'self'; object-src 'self';",
+    "web_accessible_resources": [
+        "js/sidebar.js",
+        "sidebar.html",
+        "styles.css"
+    ],
+    "icons": {
+        "128": "icon.png"
+    },
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.kayosports.com.au/*"
+            ],
+            "js": [
+                "js/content.js"
+            ],
+            "css": [
+                "styles.css"
+            ]
+        }
+    ]
+}
