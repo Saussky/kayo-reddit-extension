@@ -4,6 +4,7 @@
     "version": "1.0.0",
     "description": "A browser extension that adds a sidebar to Kayo that loads Reddit comments from a specific thread.",
     "permissions": [
+        "webNavigation",
         "activeTab",
         "*://*.kayosports.com.au/*"
     ],
@@ -27,10 +28,10 @@
     },
     "background": {
         "scripts": [
-            "background.js"
+            "js/background.js"
         ],
         "persistent": false
-    },
+    },      
     "content_scripts": [
         {
             "matches": [

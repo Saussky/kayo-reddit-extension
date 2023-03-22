@@ -36,8 +36,11 @@ function observeUrlChanges() {
                 if (isSameGame(kayoUrl, threadLink)) {
                     console.log('we are in business')
                     // setInterval
+                    // Every 15 seconds 
                     setInterval(() => {
+                        getRedditComments(threadLink)
 
+                        // Run the function that gets comments and puts them on screen
                     }, 150000)
                     
                   } else {

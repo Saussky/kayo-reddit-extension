@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStickiedThreads = void 0;
+exports.getStickiedThreads = exports.getRedditComments = void 0;
 const threadUrl = 'r/AFL/comments/11v6phv/match_thread_gws_giants_vs_adelaide_round_1/';
 const apiUrl = `https://www.reddit.com/${threadUrl}.json`;
 //?limit=5
-async function getRedditComments() {
+async function getRedditComments(threadLink) {
     let goodComments = []; // this is going to have to be an object
     const now = new Date();
     const utcTime = Math.floor(now.getTime() / 1000);
     try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(`https://www.reddit.com/${threadLink}.json`);
         const data = await response.json();
         const comments = data[1].data.children;
         for (let i = 0; i < 5; i++) {
@@ -29,6 +29,7 @@ async function getRedditComments() {
         console.error('Error fetching comments:', error);
     }
 }
+exports.getRedditComments = getRedditComments;
 // getRedditComments()
 // ups = upvotes, downs = downvotes
 // created_utc = utc

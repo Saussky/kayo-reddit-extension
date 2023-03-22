@@ -1,31 +1,66 @@
 "use strict";
 const sidebarExists = document.getElementById('kayo-reddit-sidebar');
-const currentUrl = window.location.href;
-console.log(`window url is ${currentUrl}`);
-if (!sidebarExists) {
-    console.log('iframe');
-    const iframe = document.createElement('iframe');
-    iframe.id = 'kayo-reddit-sidebar';
-    iframe.src = chrome.runtime.getURL('sidebar.html');
-    iframe.style.cssText = `
+console.log('content.js is running');
+function initObserver() {
+    const targetNode = document.body;
+    const config = { childList: true, subtree: true };
+    let extensionInitialized = false;
+    const observer = new MutationObserver((mutationsList, observer) => {
+        if (extensionInitialized) {
+            return;
+        }
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                const videoPlayer = document.querySelector('video');
+                if (videoPlayer) {
+                    console.log('oii');
+                    initExtension();
+                    extensionInitialized = true;
+                    observer.disconnect(); // Stop observing when the video player is found
+                    break;
+                }
+            }
+        }
+    });
+    observer.observe(targetNode, config);
+}
+initObserver();
+function initExtension() {
+    console.log('initExtension');
+    if (!sidebarExists) {
+        console.log('iframe');
+        const iframe = document.createElement('iframe');
+        iframe.id = 'kayo-reddit-sidebar';
+        iframe.src = chrome.runtime.getURL('sidebar.html');
+        iframe.style.cssText = `
     border: none;
     height: 100%;
-    position: fixed;
+    position: relative;
+    width: 250px;
     right: 0;
     top: 0;
-    width: 400px;
     z-index: 99999;
   `;
-    document.body.appendChild(iframe);
-    iframe.onload = () => {
-        console.log('iframe loaded');
-        initSidebar(iframe);
-    };
+        const videoElement = document.querySelector('video');
+        if (videoElement) {
+            console.log('player found');
+            videoElement.parentNode.insertBefore(iframe, videoElement.nextSibling);
+        }
+        else {
+            console.log('Player div not found');
+            document.body.appendChild(iframe);
+        }
+        iframe.onload = () => {
+            console.log('iframe loaded');
+            initSidebar(iframe);
+        };
+    }
+    else {
+        console.log('nframe');
+        sidebarExists.remove();
+    }
 }
-else {
-    console.log('nframe');
-    sidebarExists.remove();
-}
+// initExtension()
 const initSidebar = (iframe) => {
     console.log('loaded sidebar.js');
     const iframeDocument = iframe.contentDocument;
@@ -57,60 +92,3 @@ const initSidebar = (iframe) => {
         }
     });
 };
-// Checks the website URL, if it's a footy game it gets the it gets the string such as 'st-kilda-saints-vs-fremantle-dockers'
-function checkUrl() {
-    const url = window.location.href;
-    const regex = /\/fixture\/sport!afl\/[\w-]*!?\d*\/fixture-([\w-]+)/;
-    const match = url.match(regex);
-    if (match) {
-        const extractedData = match[1];
-        console.log('Regex matched', extractedData);
-        return extractedData;
-    }
-    else {
-        console.log('No regex matched');
-        return '';
-    }
-}
-function observeUrlChanges() {
-    const targetNode = document.querySelector('body');
-    const observerConfig = {
-        childList: true,
-        subtree: true,
-    };
-    const urlObserver = new MutationObserver(() => {
-        checkUrl();
-    });
-    if (targetNode) {
-        urlObserver.observe(targetNode, observerConfig);
-    }
-}
-// Monitor URL changes
-observeUrlChanges();
-const extractTeamName = (urlString) => {
-    const words = urlString.toLowerCase().split(/[-_]/);
-    const teamNames = words.filter((word) => word !== 'vs' && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
-    return teamNames;
-};
-function isSameGame(urlString, redditTitle) {
-    const kayo = extractTeamName(urlString);
-    const reddit = extractTeamName(redditTitle);
-    let matchCount = 0;
-    // Counts the matching words in the above arrays, if there are two then returns true
-    for (const kayoElement of kayo) {
-        for (const redditElement of reddit) {
-            if (kayoElement === redditElement) {
-                matchCount++;
-                if (matchCount >= 2) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-// if (isSameGame(checkUrl(), reddit)) {
-//   console.log('oiiiiiii')
-// } else {
-//   console.log('noiiiiiiii')
-// }

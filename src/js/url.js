@@ -22,9 +22,22 @@ function observeUrlChanges() {
         childList: true,
         subtree: true,
     };
-    const urlObserver = new MutationObserver(() => {
-        if (checkUrl()) {
-            const redditThreads = (0, reddit_1.getStickiedThreads)();
+    const urlObserver = new MutationObserver(async () => {
+        const kayoUrl = checkUrl();
+        if (kayoUrl) {
+            // probably turn this into it's own function
+            const redditThreads = await (0, reddit_1.getStickiedThreads)();
+            redditThreads.forEach((threadLink) => {
+                if (isSameGame(kayoUrl, threadLink)) {
+                    console.log('we are in business');
+                    // setInterval
+                    setInterval(() => {
+                    }, 150000);
+                }
+                else {
+                    console.log('noiiiiiiii');
+                }
+            });
         }
     });
     if (targetNode) {
