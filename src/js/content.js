@@ -1,6 +1,4 @@
 "use strict";
-const sidebarExists = document.getElementById('kayo-reddit-sidebar');
-console.log('content.js is running');
 function initObserver() {
     const targetNode = document.body;
     const config = { childList: true, subtree: true };
@@ -26,25 +24,39 @@ function initObserver() {
 }
 initObserver();
 function initExtension() {
+    var _a;
+    const sidebarExists = document.getElementById('kayo-reddit-sidebar');
     console.log('initExtension');
     if (!sidebarExists) {
         console.log('iframe');
+        // left: calc(100% - 267px);
         const iframe = document.createElement('iframe');
         iframe.id = 'kayo-reddit-sidebar';
         iframe.src = chrome.runtime.getURL('sidebar.html');
         iframe.style.cssText = `
     border: none;
     height: 100%;
-    position: relative;
-    width: 250px;
-    right: 0;
+    position: absolute;
+    width: 335px;
+
     top: 0;
     z-index: 99999;
   `;
         const videoElement = document.querySelector('video');
         if (videoElement) {
             console.log('player found');
-            videoElement.parentNode.insertBefore(iframe, videoElement.nextSibling);
+            const locationDiv = document.querySelector('.bvuuzM');
+            const parentDiv = document.querySelector('.ikIvWZ');
+            if (locationDiv) {
+                locationDiv.style.setProperty('left', 'calc(0% - 4vw)', 'important');
+                locationDiv.style.setProperty('transform', 'translate(0%, -50%)', 'important');
+                locationDiv.style.setProperty('width', 'calc(100% - 190px)', 'important');
+                (_a = locationDiv.parentElement) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
+                const locationDivWidth = locationDiv.getBoundingClientRect().width;
+                console.log('jericho ', locationDivWidth);
+                iframe.style.left = `calc(${locationDivWidth}px - 5vw)  `;
+            }
+            /// videoElement.parentNode!.insertBefore(iframe, videoElement.nextSibling);
         }
         else {
             console.log('Player div not found');

@@ -37,15 +37,16 @@ function initExtension() {
   if (!sidebarExists) {
     console.log('iframe')
 
+        // left: calc(100% - 267px);
     const iframe = document.createElement('iframe');
     iframe.id = 'kayo-reddit-sidebar';
     iframe.src = chrome.runtime.getURL('sidebar.html');
     iframe.style.cssText = `
     border: none;
     height: 100%;
-    position: relative;
-    width: 250px;
-    right: 0;
+    position: absolute;
+    width: 335px;
+
     top: 0;
     z-index: 99999;
   `;
@@ -53,7 +54,21 @@ function initExtension() {
     const videoElement = document.querySelector('video');
     if (videoElement) {
       console.log('player found')
-      videoElement.parentNode!.insertBefore(iframe, videoElement.nextSibling);
+      const locationDiv = document.querySelector('.bvuuzM') as HTMLElement;
+      const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
+
+      if (locationDiv) {
+        locationDiv.style.setProperty('left', 'calc(0% - 4vw)', 'important');
+        locationDiv.style.setProperty('transform', 'translate(0%, -50%)', 'important');
+        locationDiv.style.setProperty('width', 'calc(100% - 190px)', 'important');
+        locationDiv.parentElement?.appendChild(iframe);
+
+        const locationDivWidth = locationDiv.getBoundingClientRect().width;
+        iframe.style.left = `calc(${locationDivWidth}px - 5vw)  `;
+      }
+
+
+      /// videoElement.parentNode!.insertBefore(iframe, videoElement.nextSibling);
     } else {
       console.log('Player div not found');
       document.body.appendChild(iframe);
