@@ -68,7 +68,7 @@ export function extractTeamName(urlString: string) {
     return teamNames;
 }
 
-function isSameGame(urlString: string, redditTitle: string) {
+export default function isSameGame(urlString: string, redditTitle: string) {
     const kayo: string[] = extractTeamName(urlString);
     const reddit: string[] = extractTeamName(redditTitle);
 
@@ -89,6 +89,10 @@ function isSameGame(urlString: string, redditTitle: string) {
 
     return false;
 }
+
+function commonValues(kayo: string[], reddit: string[]): string[] {
+    return kayo.filter((value) => reddit.includes(value));
+  }
 
   // if (isSameGame(checkUrl(), reddit)) {
   //   console.log('oiiiiiii')

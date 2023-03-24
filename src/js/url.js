@@ -71,6 +71,10 @@ function isSameGame(urlString, redditTitle) {
     }
     return false;
 }
+exports.default = isSameGame;
+function commonValues(kayo, reddit) {
+    return kayo.filter((value) => reddit.includes(value));
+}
 // if (isSameGame(checkUrl(), reddit)) {
 //   console.log('oiiiiiii')
 // } else {

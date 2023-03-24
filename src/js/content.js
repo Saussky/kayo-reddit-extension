@@ -7,12 +7,25 @@ function initObserver() {
         if (extensionInitialized) {
             return;
         }
+        const url = window.location.href;
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
+                // Check if the URL does not contain the string 'afl'. Maybe move this to manifest?
+                if (!url.toLowerCase().includes('afl')) {
+                    console.log('The URL does not contain "afl".');
+                    break;
+                }
+                const kayoTeams = extractTeamName(url);
+                const redditTeams = ['melbourne', 'brisbane'];
+                const gameName = commonValues(kayoTeams, redditTeams).join('');
+                if (commonValues(kayoTeams, redditTeams).length < 2) {
+                    console.log("Couldn't find matching reddit thread");
+                    break;
+                }
                 const videoPlayer = document.querySelector('video');
                 if (videoPlayer) {
                     console.log('oii');
-                    initExtension();
+                    initExtension(gameName);
                     extensionInitialized = true;
                     observer.disconnect(); // Stop observing when the video player is found
                     break;
@@ -24,11 +37,11 @@ function initObserver() {
 }
 initObserver();
 function extractTeamName(urlString) {
-    const words = urlString.toLowerCase().split(/[-_]/);
-    const teamNames = words.filter((word) => word !== 'vs' && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
+    const words = urlString.toLowerCase().split(/[-_!1]/);
+    const teamNames = words.filter((word) => word !== 'vs' && !word.startsWith('https://') && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
     return teamNames;
 }
-function initExtension() {
+function initExtension(gameName) {
     var _a;
     const sidebarExists = document.getElementById('kayo-reddit-sidebar');
     console.log('initExtension');
@@ -42,18 +55,12 @@ function initExtension() {
     height: 100%;
     position: absolute;
     width: 335px;
-
     top: 0;
     z-index: 99999;
   `;
-        const url = window.location.href;
-        const heading = extractTeamName(url)[1];
-        console.log('heee', heading);
-        // const extensionTitle = iframe.querySelector('.extension-title') as HTMLElement
-        // extensionTitle.innerHTML = url;
         const videoElement = document.querySelector('video');
         if (videoElement) {
-            console.log('player found');
+            console.log('video found');
             const locationDiv = document.querySelector('.bvuuzM'); // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
             if (locationDiv) {
                 locationDiv.style.setProperty('left', 'calc(0% - 4vw)', 'important');
@@ -65,12 +72,12 @@ function initExtension() {
             }
         }
         else {
-            console.log('Player div not found');
+            console.log('video not found');
             document.body.appendChild(iframe);
         }
         iframe.onload = () => {
             console.log('iframe loaded');
-            initSidebar(iframe, heading);
+            initSidebar(iframe, gameName);
         };
     }
     else {
@@ -79,19 +86,19 @@ function initExtension() {
     }
 }
 // initExtension()
-const initSidebar = (iframe, heading) => {
+const initSidebar = (iframe, teams) => {
     console.log('loaded sidebar.js');
     const iframeDocument = iframe.contentDocument;
-    iframeDocument.querySelector('extensionTitle').innerHTML = heading;
+    // Set the heading
+    const heading = iframeDocument.querySelector('.extension-title');
+    heading.innerHTML = teams;
+    // Change this to load automatically
     iframeDocument.getElementById('load-comments').addEventListener('click', async () => {
         console.log('click');
         const threadUrl = iframeDocument.getElementById('thread-url').value;
         const apiUrl = `https://www.reddit.com/${threadUrl}.json?limit=5`;
         try {
-            console.log('gddday mate');
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            const comments = data[1].data.children;
+            const comments = ['empty'];
             const commentsContainer = iframeDocument.getElementById('comments-container');
             commentsContainer.innerHTML = '';
             comments.forEach((comment) => {
@@ -111,3 +118,6 @@ const initSidebar = (iframe, heading) => {
         }
     });
 };
+function commonValues(kayo, reddit) {
+    return kayo.filter((value) => reddit.includes(value));
+}
