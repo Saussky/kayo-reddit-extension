@@ -62,7 +62,7 @@ function observeUrlChanges() {
 
 
 
-const extractTeamName = (urlString: string) => {
+export function extractTeamName(urlString: string) {
     const words = urlString.toLowerCase().split(/[-_]/);
     const teamNames = words.filter((word) => word !== 'vs' && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
     return teamNames;

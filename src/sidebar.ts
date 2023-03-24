@@ -1,6 +1,5 @@
 window.initSidebar = () => {
-    console.log('loaded sidebar.js');
-    console.log('loaded sidebar.js');
+    initHeading('balls');
 
     document.getElementById('load-comments')!.addEventListener('click', async () => {
         console.log('click');
@@ -31,4 +30,9 @@ window.initSidebar = () => {
             console.error('Error fetching comments:', error);
         }
     });
+}
+
+function initHeading(text: string) {
+    const heading = document.querySelector('.extensionTitle') as HTMLElement
+    heading.innerHTML = text;
 }

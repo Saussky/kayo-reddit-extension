@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractTeamName = void 0;
 const reddit_1 = require("./reddit");
 // Checks the website URL, if it's a footy game it gets the it gets the string such as 'st-kilda-saints-vs-fremantle-dockers'
 function checkUrl() {
@@ -47,11 +48,12 @@ function observeUrlChanges() {
         urlObserver.observe(targetNode, observerConfig);
     }
 }
-const extractTeamName = (urlString) => {
+function extractTeamName(urlString) {
     const words = urlString.toLowerCase().split(/[-_]/);
     const teamNames = words.filter((word) => word !== 'vs' && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
     return teamNames;
-};
+}
+exports.extractTeamName = extractTeamName;
 function isSameGame(urlString, redditTitle) {
     const kayo = extractTeamName(urlString);
     const reddit = extractTeamName(redditTitle);

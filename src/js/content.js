@@ -23,12 +23,16 @@ function initObserver() {
     observer.observe(targetNode, config);
 }
 initObserver();
+function extractTeamName(urlString) {
+    const words = urlString.toLowerCase().split(/[-_]/);
+    const teamNames = words.filter((word) => word !== 'vs' && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
+    return teamNames;
+}
 function initExtension() {
     var _a;
     const sidebarExists = document.getElementById('kayo-reddit-sidebar');
     console.log('initExtension');
     if (!sidebarExists) {
-        console.log('iframe');
         // left: calc(100% - 267px);
         const iframe = document.createElement('iframe');
         iframe.id = 'kayo-reddit-sidebar';
@@ -42,21 +46,23 @@ function initExtension() {
     top: 0;
     z-index: 99999;
   `;
+        const url = window.location.href;
+        const heading = extractTeamName(url)[1];
+        console.log('heee', heading);
+        // const extensionTitle = iframe.querySelector('.extension-title') as HTMLElement
+        // extensionTitle.innerHTML = url;
         const videoElement = document.querySelector('video');
         if (videoElement) {
             console.log('player found');
-            const locationDiv = document.querySelector('.bvuuzM');
-            const parentDiv = document.querySelector('.ikIvWZ');
+            const locationDiv = document.querySelector('.bvuuzM'); // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
             if (locationDiv) {
                 locationDiv.style.setProperty('left', 'calc(0% - 4vw)', 'important');
                 locationDiv.style.setProperty('transform', 'translate(0%, -50%)', 'important');
                 locationDiv.style.setProperty('width', 'calc(100% - 190px)', 'important');
                 (_a = locationDiv.parentElement) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
                 const locationDivWidth = locationDiv.getBoundingClientRect().width;
-                console.log('jericho ', locationDivWidth);
                 iframe.style.left = `calc(${locationDivWidth}px - 5vw)  `;
             }
-            /// videoElement.parentNode!.insertBefore(iframe, videoElement.nextSibling);
         }
         else {
             console.log('Player div not found');
@@ -64,18 +70,19 @@ function initExtension() {
         }
         iframe.onload = () => {
             console.log('iframe loaded');
-            initSidebar(iframe);
+            initSidebar(iframe, heading);
         };
     }
     else {
-        console.log('nframe');
+        console.log('no iframe');
         sidebarExists.remove();
     }
 }
 // initExtension()
-const initSidebar = (iframe) => {
+const initSidebar = (iframe, heading) => {
     console.log('loaded sidebar.js');
     const iframeDocument = iframe.contentDocument;
+    iframeDocument.querySelector('extensionTitle').innerHTML = heading;
     iframeDocument.getElementById('load-comments').addEventListener('click', async () => {
         console.log('click');
         const threadUrl = iframeDocument.getElementById('thread-url').value;

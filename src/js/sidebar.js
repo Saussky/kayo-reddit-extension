@@ -1,7 +1,6 @@
 "use strict";
 window.initSidebar = () => {
-    console.log('loaded sidebar.js');
-    console.log('loaded sidebar.js');
+    initHeading('balls');
     document.getElementById('load-comments').addEventListener('click', async () => {
         console.log('click');
         const threadUrl = document.getElementById('thread-url').value;
@@ -30,3 +29,7 @@ window.initSidebar = () => {
         }
     });
 };
+function initHeading(text) {
+    const heading = document.querySelector('.extensionTitle');
+    heading.innerHTML = text;
+}

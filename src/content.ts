@@ -28,17 +28,23 @@ function initObserver() {
 
 initObserver();
 
+function extractTeamName(urlString: string) {
+  const words = urlString.toLowerCase().split(/[-_]/);
+  const teamNames = words.filter((word) => word !== 'vs' && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
+  return teamNames;
+}
+
 
 
 function initExtension() {
-  const sidebarExists = document.getElementById('kayo-reddit-sidebar');
+  const sidebarExists = document.getElementById('kayo-reddit-sidebar') as HTMLElement
   console.log('initExtension')
 
-  if (!sidebarExists) {
-    console.log('iframe')
 
-        // left: calc(100% - 267px);
-    const iframe = document.createElement('iframe');
+
+  if (!sidebarExists) {
+    // left: calc(100% - 267px);
+    const iframe: HTMLIFrameElement = document.createElement('iframe');
     iframe.id = 'kayo-reddit-sidebar';
     iframe.src = chrome.runtime.getURL('sidebar.html');
     iframe.style.cssText = `
@@ -51,11 +57,16 @@ function initExtension() {
     z-index: 99999;
   `;
 
+  const url: string = window.location.href;
+  const heading: string = extractTeamName(url)[1]
+  console.log('heee', heading)
+  // const extensionTitle = iframe.querySelector('.extension-title') as HTMLElement
+  // extensionTitle.innerHTML = url;
+
     const videoElement = document.querySelector('video');
     if (videoElement) {
       console.log('player found')
-      const locationDiv = document.querySelector('.bvuuzM') as HTMLElement;
-      const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
+      const locationDiv = document.querySelector('.bvuuzM') as HTMLElement;      // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
 
       if (locationDiv) {
         locationDiv.style.setProperty('left', 'calc(0% - 4vw)', 'important');
@@ -66,9 +77,6 @@ function initExtension() {
         const locationDivWidth = locationDiv.getBoundingClientRect().width;
         iframe.style.left = `calc(${locationDivWidth}px - 5vw)  `;
       }
-
-
-      /// videoElement.parentNode!.insertBefore(iframe, videoElement.nextSibling);
     } else {
       console.log('Player div not found');
       document.body.appendChild(iframe);
@@ -76,11 +84,11 @@ function initExtension() {
 
     iframe.onload = () => {
       console.log('iframe loaded');
-      initSidebar(iframe);
+      initSidebar(iframe, heading);
     };
 
   } else {
-    console.log('nframe')
+    console.log('no iframe')
     sidebarExists.remove();
   }
 }
@@ -88,14 +96,18 @@ function initExtension() {
 
 
 
-const initSidebar = (iframe: HTMLIFrameElement) => {
+const initSidebar = (
+  iframe: HTMLIFrameElement,
+  heading: string
+) => {
   console.log('loaded sidebar.js');
 
   const iframeDocument = iframe.contentDocument!;
 
+  iframeDocument.querySelector('extensionTitle')!.innerHTML = heading
+
   iframeDocument.getElementById('load-comments')!.addEventListener('click', async () => {
     console.log('click');
-
 
     const threadUrl = (iframeDocument.getElementById('thread-url') as HTMLInputElement).value;
     const apiUrl = `https://www.reddit.com/${threadUrl}.json?limit=5`;
