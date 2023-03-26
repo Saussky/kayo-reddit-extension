@@ -6,7 +6,8 @@
     "permissions": [
         "webNavigation",
         "activeTab",
-        "*://*.kayosports.com.au/*"
+        "*://*.kayosports.com.au/*",
+        "*://*.reddit.com/"
     ],
     "commands": {
         "toggle-sidebar": {

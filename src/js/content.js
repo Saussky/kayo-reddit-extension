@@ -1,9 +1,9 @@
 "use strict";
-function initObserver() {
+async function initObserver() {
     const targetNode = document.body;
     const config = { childList: true, subtree: true };
     let extensionInitialized = false;
-    const observer = new MutationObserver((mutationsList, observer) => {
+    const observer = new MutationObserver(async (mutationsList, observer) => {
         if (extensionInitialized) {
             return;
         }
@@ -16,16 +16,27 @@ function initObserver() {
                     break;
                 }
                 const kayoTeams = extractTeamName(url);
-                const redditTeams = ['melbourne', 'brisbane'];
-                const gameName = commonValues(kayoTeams, redditTeams).join('');
-                if (commonValues(kayoTeams, redditTeams).length < 2) {
+                let redditTeams = await new Promise((resolve) => {
+                    chrome.runtime.sendMessage({ action: "getStickiedThreads" }, (response) => {
+                        resolve(response);
+                    });
+                });
+                let foundMatchingThread = '';
+                for (const thread of redditTeams) {
+                    const game = extractTeamName(thread);
+                    if (commonValues(kayoTeams, game).length >= 2) {
+                        foundMatchingThread = thread;
+                    }
+                }
+                if (!foundMatchingThread) {
                     console.log("Couldn't find matching reddit thread");
                     break;
                 }
+                console.log('matching thread', foundMatchingThread);
                 const videoPlayer = document.querySelector('video');
                 if (videoPlayer) {
                     console.log('oii');
-                    initExtension(gameName);
+                    initExtension(foundMatchingThread);
                     extensionInitialized = true;
                     observer.disconnect(); // Stop observing when the video player is found
                     break;
@@ -35,13 +46,28 @@ function initObserver() {
     });
     observer.observe(targetNode, config);
 }
+// let redditTeams: string[] = await new Promise((resolve) => {
+//   chrome.runtime.sendMessage({ action: "getStickiedThreads" }, (response) => {
+//     resolve(response);
+//   });
+// });
+// redditTeams = extractTeamName(redditTeams.join('-'))
 initObserver();
 function extractTeamName(urlString) {
     const words = urlString.toLowerCase().split(/[-_!1]/);
     const teamNames = words.filter((word) => word !== 'vs' && !word.startsWith('https://') && word !== 'fixture' && word !== 'match' && word !== 'thread' && word !== 'round');
     return teamNames;
 }
-function initExtension(gameName) {
+const aflTeams = ["adelaide", "brisbane", "carlton", "collingwood", "essendon", "fremantle", "geelong", "gold_coast", "greater_western_sydney", "hawthorn", "melbourne", "north_melbourne", "port_adelaide", "richmond", "st_kilda", "sydney", "west_coast", "western_bulldogs"];
+function whoVsWho(threadName) {
+    const regex = new RegExp(aflTeams.join("|"), "gi");
+    const matches = threadName.match(regex);
+    if (matches && matches.length >= 2) {
+        return `${matches[0].replace('_', ' ')} vs ${matches[1].replace('_', ' ')}`;
+    }
+    return "";
+}
+function initExtension(foundMatchingThread) {
     var _a;
     const sidebarExists = document.getElementById('kayo-reddit-sidebar');
     console.log('initExtension');
@@ -73,11 +99,10 @@ function initExtension(gameName) {
         }
         else {
             console.log('video not found');
-            document.body.appendChild(iframe);
         }
         iframe.onload = () => {
             console.log('iframe loaded');
-            initSidebar(iframe, gameName);
+            initSidebar(iframe, foundMatchingThread);
         };
     }
     else {
@@ -86,37 +111,30 @@ function initExtension(gameName) {
     }
 }
 // initExtension()
-const initSidebar = (iframe, teams) => {
+const initSidebar = async (iframe, foundMatchingThread) => {
     console.log('loaded sidebar.js');
     const iframeDocument = iframe.contentDocument;
-    // Set the heading
     const heading = iframeDocument.querySelector('.extension-title');
-    heading.innerHTML = teams;
-    // Change this to load automatically
-    iframeDocument.getElementById('load-comments').addEventListener('click', async () => {
-        console.log('click');
-        const threadUrl = iframeDocument.getElementById('thread-url').value;
-        const apiUrl = `https://www.reddit.com/${threadUrl}.json?limit=5`;
-        try {
-            const comments = ['empty'];
-            const commentsContainer = iframeDocument.getElementById('comments-container');
-            commentsContainer.innerHTML = '';
-            comments.forEach((comment) => {
-                const commentDiv = document.createElement('div');
-                commentDiv.className = 'comment';
-                commentDiv.innerHTML = `
-                <strong>${comment.data.author}</strong>:
-                <p>${comment.data.body}</p>
-              `;
-                commentsContainer.appendChild(commentDiv);
+    const commentContainer = iframeDocument.querySelector('#comments-container');
+    heading.innerHTML = whoVsWho(foundMatchingThread);
+    const initialTime = Math.floor(Date.now() / 1000);
+    const fetchNewComments = async () => {
+        const comments = await new Promise((resolve) => {
+            chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread, lastFetchTime: initialTime } }, (response) => {
+                resolve(response);
             });
-        }
-        catch (error) {
-            const commentsContainer = iframeDocument.getElementById('comments-container');
-            commentsContainer.innerHTML = 'something went wronnng!';
-            console.error('Error fetching comments:', error);
-        }
-    });
+        });
+        console.log(comments);
+        comments.forEach((comment) => {
+            const commentDiv = document.createElement("div");
+            commentDiv.textContent = comment;
+            commentContainer.appendChild(commentDiv);
+        });
+    };
+    // Fetch comments initially
+    await fetchNewComments();
+    // Fetch new comments every 15 seconds
+    setInterval(fetchNewComments, 15000);
 };
 function commonValues(kayo, reddit) {
     return kayo.filter((value) => reddit.includes(value));

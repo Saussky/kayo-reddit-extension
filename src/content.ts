@@ -1,39 +1,51 @@
-
-function initObserver() {
-  const targetNode = document.body as HTMLElement
+async function initObserver() {
+  const targetNode = document.body as HTMLElement;
   const config = { childList: true, subtree: true };
   let extensionInitialized = false;
 
-  const observer = new MutationObserver((mutationsList, observer) => {
+  const observer = new MutationObserver(async (mutationsList, observer) => {
     if (extensionInitialized) {
       return;
     }
 
     const url: string = window.location.href;
 
-
     for (const mutation of mutationsList) {
       if (mutation.type === 'childList') {
-
         // Check if the URL does not contain the string 'afl'. Maybe move this to manifest?
         if (!url.toLowerCase().includes('afl')) {
           console.log('The URL does not contain "afl".');
-          break
+          break;
         }
 
-        const kayoTeams: string[] = extractTeamName(url)
-        const redditTeams: string[] = ['melbourne', 'brisbane']
-        const gameName: string = commonValues(kayoTeams, redditTeams).join('')
+        const kayoTeams: string[] = extractTeamName(url);
+        let redditTeams: string[] = await new Promise((resolve) => {
+          chrome.runtime.sendMessage({ action: "getStickiedThreads" }, (response) => {
+            resolve(response);
+          });
+        });
 
-        if (commonValues(kayoTeams, redditTeams).length < 2) {
-          console.log("Couldn't find matching reddit thread")
-          break
+        let foundMatchingThread: string = '';
+        for (const thread of redditTeams) {
+          const game = extractTeamName(thread);
+
+          if (commonValues(kayoTeams, game).length >= 2) {
+            foundMatchingThread = thread
+          }
         }
+
+        if (!foundMatchingThread) {
+          console.log("Couldn't find matching reddit thread");
+          break;
+        }
+
+        console.log('matching thread', foundMatchingThread)
+
 
         const videoPlayer = document.querySelector('video');
         if (videoPlayer) {
-          console.log('oii')
-          initExtension(gameName);
+          console.log('oii');
+          initExtension(foundMatchingThread);
           extensionInitialized = true;
           observer.disconnect(); // Stop observing when the video player is found
           break;
@@ -44,8 +56,15 @@ function initObserver() {
 
   observer.observe(targetNode, config);
 }
+// let redditTeams: string[] = await new Promise((resolve) => {
+//   chrome.runtime.sendMessage({ action: "getStickiedThreads" }, (response) => {
+//     resolve(response);
+//   });
+// });
+// redditTeams = extractTeamName(redditTeams.join('-'))
 
 initObserver();
+
 
 function extractTeamName(urlString: string) {
   const words = urlString.toLowerCase().split(/[-_!1]/);
@@ -53,9 +72,20 @@ function extractTeamName(urlString: string) {
   return teamNames;
 }
 
+const aflTeams = ["adelaide", "brisbane", "carlton", "collingwood", "essendon", "fremantle", "geelong", "gold_coast", "greater_western_sydney", "hawthorn", "melbourne", "north_melbourne", "port_adelaide", "richmond", "st_kilda", "sydney", "west_coast", "western_bulldogs"];
+
+function whoVsWho(threadName: string) {
+  const regex = new RegExp(aflTeams.join("|"), "gi");
+  const matches = threadName.match(regex);
+  if (matches && matches.length >= 2) {
+    return `${matches[0].replace('_', ' ')} vs ${matches[1].replace('_', ' ')}`;
+  }
+  return "";
+}
 
 
-function initExtension(gameName: string) {
+
+function initExtension(foundMatchingThread: string) {
   const sidebarExists = document.getElementById('kayo-reddit-sidebar') as HTMLElement
   console.log('initExtension')
 
@@ -90,12 +120,11 @@ function initExtension(gameName: string) {
       }
     } else {
       console.log('video not found');
-      document.body.appendChild(iframe);
     }
 
     iframe.onload = () => {
       console.log('iframe loaded');
-      initSidebar(iframe, gameName);
+      initSidebar(iframe, foundMatchingThread);
     };
 
   } else {
@@ -107,48 +136,40 @@ function initExtension(gameName: string) {
 
 
 
-const initSidebar = (
+const initSidebar = async (
   iframe: HTMLIFrameElement,
-  teams: string
+  foundMatchingThread: string
 ) => {
   console.log('loaded sidebar.js');
   const iframeDocument = iframe.contentDocument!;
-
-  // Set the heading
-
   const heading = iframeDocument.querySelector('.extension-title') as HTMLElement
-  heading.innerHTML = teams
+  const commentContainer = iframeDocument.querySelector('#comments-container') as HTMLElement
 
-  // Change this to load automatically
-  iframeDocument.getElementById('load-comments')!.addEventListener('click', async () => {
-    console.log('click');
-
-    const threadUrl = (iframeDocument.getElementById('thread-url') as HTMLInputElement).value;
-    const apiUrl = `https://www.reddit.com/${threadUrl}.json?limit=5`;
-
-    try {
+  heading.innerHTML = whoVsWho(foundMatchingThread)
+  const initialTime = Math.floor(Date.now() / 1000);
 
 
-      const comments = ['empty']
-      const commentsContainer = iframeDocument.getElementById('comments-container');
-      commentsContainer!.innerHTML = '';
-
-      comments.forEach((comment: any) => {
-        const commentDiv = document.createElement('div');
-        commentDiv.className = 'comment';
-        commentDiv.innerHTML = `
-                <strong>${comment.data.author}</strong>:
-                <p>${comment.data.body}</p>
-              `;
-        commentsContainer!.appendChild(commentDiv);
+  const fetchNewComments = async () => {
+    const comments: string[] = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread, lastFetchTime: initialTime } }, (response) => {
+        resolve(response);
       });
-    }
-    catch (error) {
-      const commentsContainer = iframeDocument.getElementById('comments-container')!;
-      commentsContainer.innerHTML = 'something went wronnng!'
-      console.error('Error fetching comments:', error);
-    }
-  });
+    });
+
+    console.log(comments)
+
+    comments.forEach((comment: string) => {
+      const commentDiv = document.createElement("div");
+      commentDiv.textContent = comment;
+      commentContainer.appendChild(commentDiv);
+    });
+  };
+
+  // Fetch comments initially
+  await fetchNewComments();
+
+  // Fetch new comments every 15 seconds
+  setInterval(fetchNewComments, 15000);
 }
 
 
