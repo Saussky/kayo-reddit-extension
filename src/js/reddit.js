@@ -1,5 +1,28 @@
 "use strict";
 const threadUrl = 'r/AFL/comments/11v6phv/match_thread_gws_giants_vs_adelaide_round_1/';
+const initialTime = Math.floor(Date.now() / 1000);
+async function getRedditCommentes(threadLink, lastFetchTime) {
+    let goodComments = [];
+    try {
+        const response = await fetch(`https://www.reddit.com/${threadLink}.json?limit=10`);
+        const data = await response.json();
+        const comments = await data[1].data.children;
+        console.log(comments);
+        comments.forEach((comment) => {
+            console.log('i');
+            const createdTime = comment.data.created_utc; // Time reddit comment was posted
+            if (createdTime > lastFetchTime) {
+                goodComments.push(comment.body);
+            }
+        });
+        console.log('g', goodComments);
+        return goodComments;
+    }
+    catch (error) {
+        console.error("Error fetching comments:", error);
+    }
+}
+getRedditCommentes(threadUrl, initialTime);
 // // async function getRedditComments(threadLink: string, lastFetchTime: number) {
 // //     let goodComments: string[] = [];
 // //     try {

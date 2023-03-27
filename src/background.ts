@@ -78,7 +78,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-
+// https://www.reddit.com/${threadLink}.json?limit=10&sort=new&after={timestamp} IS UNIX timestamp
 async function getRedditComments(threadLink: string, lastFetchTime: number) {
     let goodComments: string[] = [];
   

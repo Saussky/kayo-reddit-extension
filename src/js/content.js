@@ -117,8 +117,9 @@ const initSidebar = async (iframe, foundMatchingThread) => {
     const heading = iframeDocument.querySelector('.extension-title');
     const commentContainer = iframeDocument.querySelector('#comments-container');
     heading.innerHTML = whoVsWho(foundMatchingThread);
-    const initialTime = Math.floor(Date.now() / 1000);
+    const initialTime = Math.floor(Date.parse(new Date().toUTCString()) / 1000); // Gets current UTC time in seconds
     const fetchNewComments = async () => {
+        console.log('15 seconds hopefully');
         const comments = await new Promise((resolve) => {
             chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread, lastFetchTime: initialTime } }, (response) => {
                 resolve(response);

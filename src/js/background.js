@@ -63,6 +63,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true; // Required to make the response async
     }
 });
+// https://www.reddit.com/${threadLink}.json?limit=10&sort=new&after={timestamp} IS UNIX timestamp
 async function getRedditComments(threadLink, lastFetchTime) {
     let goodComments = [];
     try {
