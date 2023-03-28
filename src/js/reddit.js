@@ -6,7 +6,7 @@ async function getRedditCommentes(threadLink, lastFetchTime) {
     try {
         const response = await fetch(`https://www.reddit.com/${threadLink}.json?limit=10`);
         const data = await response.json();
-        const comments = await data[1].data.children;
+        const comments = await data[1].data.children; //data[0] is the initial post text
         console.log(comments);
         comments.forEach((comment) => {
             console.log('i');

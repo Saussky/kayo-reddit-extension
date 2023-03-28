@@ -21,6 +21,7 @@ async function initObserver() {
                         resolve(response);
                     });
                 });
+                redditTeams = ['r/AFL/comments/1225t2f/match_thread_sydney_swans_vs_hawthorn_round_2/'];
                 let foundMatchingThread = '';
                 for (const thread of redditTeams) {
                     const game = extractTeamName(thread);
@@ -46,12 +47,6 @@ async function initObserver() {
     });
     observer.observe(targetNode, config);
 }
-// let redditTeams: string[] = await new Promise((resolve) => {
-//   chrome.runtime.sendMessage({ action: "getStickiedThreads" }, (response) => {
-//     resolve(response);
-//   });
-// });
-// redditTeams = extractTeamName(redditTeams.join('-'))
 initObserver();
 function extractTeamName(urlString) {
     const words = urlString.toLowerCase().split(/[-_!1]/);
@@ -87,14 +82,14 @@ function initExtension(foundMatchingThread) {
         const videoElement = document.querySelector('video');
         if (videoElement) {
             console.log('video found');
-            const locationDiv = document.querySelector('.bvuuzM'); // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
-            if (locationDiv) {
-                locationDiv.style.setProperty('left', 'calc(0% - 4vw)', 'important');
-                locationDiv.style.setProperty('transform', 'translate(0%, -50%)', 'important');
-                locationDiv.style.setProperty('width', 'calc(100% - 190px)', 'important');
-                (_a = locationDiv.parentElement) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
-                const locationDivWidth = locationDiv.getBoundingClientRect().width;
-                iframe.style.left = `calc(${locationDivWidth}px - 5vw)  `;
+            const kayoPlayer = document.querySelector('.bvuuzM'); // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
+            if (kayoPlayer) {
+                kayoPlayer.style.setProperty('left', 'calc(0% - 4vw)', 'important');
+                kayoPlayer.style.setProperty('transform', 'translate(0%, -50%)', 'important');
+                kayoPlayer.style.setProperty('width', 'calc(100% - 190px)', 'important');
+                (_a = kayoPlayer.parentElement) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
+                const kayoPlayerWidth = kayoPlayer.getBoundingClientRect().width;
+                iframe.style.left = `calc(${kayoPlayerWidth}px - 5vw)  `;
             }
         }
         else {

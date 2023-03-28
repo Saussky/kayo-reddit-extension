@@ -66,10 +66,9 @@ async function getStickiedThreads(): Promise<string[]> {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "getRedditComments") {
-        console.log("MESSAGE SENT");
+        console.log("GETTING REDDIT COMMENTS");
 
         const threadLink = request.data.threadLink;
-        console.log(threadLink);
         const lastFetchTime = request.data.lastFetchTime;
         getRedditComments(threadLink, lastFetchTime).then((threads) => {
             sendResponse(threads);
@@ -87,13 +86,17 @@ async function getRedditComments(threadLink: string, lastFetchTime: number) {
       const data = await response.json();
       const comments = await data[0].data.children;
   
-      for (let i = 0; i < 5; i++) {
-        const createdTime: number = comments[i].data.created_utc; // Time reddit comment was posted
+    //   for (let i = 0; i < 5; i++) {
+    //     const createdTime: number = comments[i].data.created_utc; // Time reddit comment was posted
   
-        if (createdTime > lastFetchTime) {
-          goodComments.push(comments[i].data.body);
-        }
-      }
+    //     if (createdTime > lastFetchTime) {
+    //       goodComments.push(comments[i].data.body);
+    //     }
+    //   }
+
+    comments.forEach((comment: any) => {
+        goodComments.push(comment.data.body)
+    })
   
       return goodComments;
     } catch (error) {
