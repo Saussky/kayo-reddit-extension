@@ -147,17 +147,24 @@ const initSidebar = async (
 
   const fetchNewComments = async () => {
     console.log('15 seconds hopefully')
-    const comments: string[] = await new Promise((resolve) => {
+    const comments: redditComment2[] = await new Promise((resolve) => {
       chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread, lastFetchTime: initialTime } }, (response) => {
         resolve(response);
       });
     });
 
-    console.log(comments)
+    console.log('coments... ', comments)
 
-    comments.forEach((comment: string) => {
+    comments.forEach((comment: redditComment2) => {
       const commentDiv = document.createElement("div");
-      commentDiv.textContent = comment;
+      const usernameH1 = document.createElement("h1");
+      const commentP = document.createElement("p");
+    
+      usernameH1.textContent = comment.username;
+      commentP.textContent = comment.comment;
+    
+      commentDiv.appendChild(usernameH1);
+      commentDiv.appendChild(commentP);
       commentContainer.appendChild(commentDiv);
     });
   };
@@ -174,4 +181,13 @@ const initSidebar = async (
 
 function commonValues(kayo: string[], reddit: string[]): string[] {
   return kayo.filter((value) => reddit.includes(value));
+}
+
+
+
+type redditComment2 = {
+  username: string,
+  comment: string,
+  score: number,
+  flair: string,
 }

@@ -2,27 +2,32 @@
 const threadUrl = 'r/AFL/comments/11v6phv/match_thread_gws_giants_vs_adelaide_round_1/';
 const initialTime = Math.floor(Date.now() / 1000);
 async function getRedditCommentes(threadLink, lastFetchTime) {
-    let goodComments = [];
+    const formattedComments = [];
     try {
-        const response = await fetch(`https://www.reddit.com/${threadLink}.json?limit=10`);
+        const response = await fetch(`https://www.reddit.com/${threadLink}.json?limit=5`);
         const data = await response.json();
-        const comments = await data[1].data.children; //data[0] is the initial post text
-        console.log(comments);
-        comments.forEach((comment) => {
-            console.log('i');
-            const createdTime = comment.data.created_utc; // Time reddit comment was posted
-            if (createdTime > lastFetchTime) {
-                goodComments.push(comment.body);
-            }
-        });
-        console.log('g', goodComments);
-        return goodComments;
+        const comments = await data[1].data.children;
+        await Promise.all(comments.map(async (comment) => {
+            const author = comment.data.author;
+            const votes = comment.data.score;
+            const flair = comment.data.author_flair_css_class;
+            const text = comment.data.body;
+            formattedComments.push({
+                username: author,
+                comment: text,
+                score: votes,
+                flair: flair
+            });
+        }));
+        console.log(formattedComments);
+        return formattedComments;
     }
     catch (error) {
         console.error("Error fetching comments:", error);
     }
 }
-getRedditCommentes(threadUrl, initialTime);
+const ahole = getRedditCommentes(threadUrl, initialTime);
+console.log(ahole);
 // // async function getRedditComments(threadLink: string, lastFetchTime: number) {
 // //     let goodComments: string[] = [];
 // //     try {

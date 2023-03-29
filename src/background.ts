@@ -79,27 +79,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // https://www.reddit.com/${threadLink}.json?limit=10&sort=new&after={timestamp} IS UNIX timestamp
 async function getRedditComments(threadLink: string, lastFetchTime: number) {
-    let goodComments: string[] = [];
-  
     try {
-      const response = await fetch(`https://www.reddit.com/${threadLink}.json?limit=5`);
-      const data = await response.json();
-      const comments = await data[0].data.children;
+        const response = await fetch(`https://www.reddit.com/${threadLink}.json?limit=5`);
+        const data = await response.json();
+        const comments = await data[1].data.children;
+        const formattedComments: redditComment[]  = []
   
-    //   for (let i = 0; i < 5; i++) {
-    //     const createdTime: number = comments[i].data.created_utc; // Time reddit comment was posted
   
-    //     if (createdTime > lastFetchTime) {
-    //       goodComments.push(comments[i].data.body);
-    //     }
-    //   }
-
-    comments.forEach((comment: any) => {
-        goodComments.push(comment.data.body)
-    })
+        await Promise.all(comments.map(async (comment: any) => {
+          const author = comment.data.author;
+          const votes = comment.data.score;
+          const flair = comment.data.author_flair_css_class;
+          const text = comment.data.body;
+        
+          formattedComments.push({
+            username: author,
+            comment: text,
+            score: votes,
+            flair: flair
+          });
+        }));
   
-      return goodComments;
+        return formattedComments;
     } catch (error) {
-      console.error("Error fetching comments:", error);
+        console.error("Error fetching comments:", error);
     }
-  }
+}
+
+type redditComment = {
+    username: string,
+    comment: string,
+    score: number,
+    flair: string,
+}

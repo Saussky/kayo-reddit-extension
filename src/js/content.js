@@ -120,10 +120,15 @@ const initSidebar = async (iframe, foundMatchingThread) => {
                 resolve(response);
             });
         });
-        console.log(comments);
+        console.log('coments... ', comments);
         comments.forEach((comment) => {
             const commentDiv = document.createElement("div");
-            commentDiv.textContent = comment;
+            const usernameH1 = document.createElement("h1");
+            const commentP = document.createElement("p");
+            usernameH1.textContent = comment.username;
+            commentP.textContent = comment.comment;
+            commentDiv.appendChild(usernameH1);
+            commentDiv.appendChild(commentP);
             commentContainer.appendChild(commentDiv);
         });
     };
