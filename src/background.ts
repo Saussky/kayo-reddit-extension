@@ -94,7 +94,7 @@ async function getRedditComments(threadLink: string) {
         };
 
         // Get all the relevant information we need from each comment
-        const formattedComments: redditCommenet[] = await filteredComments.map((comment: any) => ({
+        const formattedComments: redditComment[] = await filteredComments.map((comment: any) => ({
             id: comment.data.id,
             username: comment.data.author,
             comment: comment.data.body,

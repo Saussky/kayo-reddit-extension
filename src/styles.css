@@ -4,10 +4,12 @@ body {
     padding: 0;
     background-color: rgb(71, 63, 64);
     color: white;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
+
 #app {
-    padding: 16px;
+    padding: 0;
 }
 
 input,
@@ -26,7 +28,7 @@ button {
 }
 
 #comments-container {
-    height: 92vh;
+    height: 99vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column-reverse;
@@ -55,12 +57,23 @@ button {
 } */
 
 .extension-title {
-    padding-bottom: 2px; /* Adjust this value to control the distance between the text and the border */
-    border-bottom: 2px solid rgb(33, 30, 30); /* Adjust the color, width, and style of the border as needed */
+    width: 98%;
+    margin: auto;
+    background-color: rgb(53, 48, 49);
+    border-bottom: 2px solid rgb(33, 30, 30);
+    box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.1);
 }
 
 .extension-title,
 h1 {
     font-size: 1.5rem;
     text-align: center;
+    padding: 11px;
+    /* margin: -4px 0 -2px 0; */
+
+    white-space: nowrap; /* Add this line */
+    overflow: hidden; /* Add this line */
+    text-overflow: ellipsis; /* Add this line */
+    max-height: 1.5rem; /* Add this line */
+    line-height: 1.5rem; /* Add this line */
 }

@@ -1,5 +1,9 @@
 "use strict";
 const aflTeams = ["adelaide", "brisbane", "carlton", "collingwood", "essendon", "fremantle", "geelong", "gold_coast", "gws", "hawthorn", "melbourne", "north_melbourne", "port_adelaide", "richmond", "st_kilda", "sydney", "west_coast", "western_bulldogs"];
+const aflTeamsObject = aflTeams.reduce((obj, team) => {
+    obj[team] = [];
+    return obj;
+}, {});
 async function initObserver() {
     const targetNode = document.body;
     const config = { childList: true, subtree: true };
@@ -69,6 +73,7 @@ function initExtension(foundMatchingThread) {
         const videoElement = document.querySelector('video');
         if (videoElement) {
             console.log('video found');
+            let idleTimeout;
             const kayoPlayer = document.querySelector('.bvuuzM'); // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
             if (kayoPlayer) {
                 kayoPlayer.style.setProperty('left', 'calc(0% - 4vw)', 'important');
@@ -84,17 +89,32 @@ function initExtension(foundMatchingThread) {
                 });
                 kayoPlayer.addEventListener("mouseleave", function () {
                     console.log('mouse left bitches');
-                    deleteControlsContainer();
+                    setTimeout(() => {
+                        deleteControlsContainer();
+                    }, 1500);
                 });
+                kayoPlayer.addEventListener("mousemove", (event) => {
+                    if (idleTimeout) {
+                        clearTimeout(idleTimeout);
+                    }
+                    idleTimeout = setTimeout(() => {
+                        deleteControlsContainer();
+                    }, 3000);
+                    applyStylesToLowerControlsContainer();
+                });
+                // .responsive-sizer__SizerOuter-sc-1b3dxan-0
+                // .responsive-sizer__SizerInner-sc-1b3dxan-1 
+                // <li class="layout-composer__LayoutItem-sc-1q0dvqo-1 ItcRP martian-player__layout-item"
+                const listStarter = document.querySelector('.ItcRP');
+                const outerContainer = document.querySelector('.czgvne');
+                const innerContainer = document.querySelector('.ikIvWZ');
+                if (listStarter && outerContainer && innerContainer) {
+                    console.log('beezlebub');
+                    // listStarter.style.setProperty('height', '100vh', 'important');
+                    // outerContainer.style.setProperty('height', '100vh', 'important');
+                    // innerContainer.style.setProperty('height', '100vh', 'important');
+                }
             }
-            // const lowerControlsContainer = document.querySelector(".sc-01-lower-controls__LowerControlsContainer-sc-1ec7mdq-0") as HTMLElement;
-            // if (lowerControlsContainer) {
-            //   lowerControlsContainer.style.position = "fixed";
-            //   lowerControlsContainer.style.bottom = "0";
-            //   lowerControlsContainer.style.left = "50%";
-            //   lowerControlsContainer.style.transform = "translateX(-50%)";
-            //   lowerControlsContainer.style.zIndex = "1000";
-            // }
         }
         else {
             console.log('video not found');
@@ -113,8 +133,9 @@ const initSidebar = async (iframe, foundMatchingThread) => {
     const iframeDocument = iframe.contentDocument;
     let oldComments = [];
     const commentContainer = iframeDocument.querySelector('#comments-container');
-    const heading = iframeDocument.querySelector('.extension-title');
-    heading.innerHTML = whoVsWho(foundMatchingThread);
+    // const heading = iframeDocument.querySelector('.extension-title') as HTMLElement
+    // heading.innerHTML = whoVsWho(foundMatchingThread)
+    // adjustFontSize(heading)
     // takes control of the scroller from the background page // doesn't work yet
     window.addEventListener("wheel", (event) => {
         if (commentContainer === null || commentContainer === void 0 ? void 0 : commentContainer.contains(event.target)) {
@@ -181,7 +202,18 @@ function whoVsWho(threadName) {
     return "";
 }
 function toInitialCap(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    return s
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+function adjustFontSize(element) {
+    const maxWidth = element.clientWidth;
+    const fontSize = parseFloat(window.getComputedStyle(element).fontSize);
+    while (element.scrollWidth > maxWidth) {
+        const newFontSize = parseFloat(window.getComputedStyle(element).fontSize) - 1;
+        element.style.fontSize = newFontSize + 'px';
+    }
 }
 function applyStylesToLowerControlsContainer() {
     const lowerControlsContainer = document.querySelector(".sc-01-lower-controls__LowerControlsContainer-sc-1ec7mdq-0");
@@ -192,9 +224,16 @@ function applyStylesToLowerControlsContainer() {
         lowerControlsContainer.style.left = "50%";
         lowerControlsContainer.style.transform = "translateX(-50%)";
         lowerControlsContainer.style.zIndex = "1000";
+        lowerControlsContainer.style.opacity = "1";
+        lowerControlsContainer.style.transition = "opacity 0.3s ease-in-out";
     }
 }
-function deleteControlsContainer() {
+async function deleteControlsContainer() {
     const lowerControlsContainer = document.querySelector(".sc-01-lower-controls__LowerControlsContainer-sc-1ec7mdq-0");
-    lowerControlsContainer.style.display = 'none';
+    if (lowerControlsContainer) {
+        lowerControlsContainer.style.opacity = "0";
+        setTimeout(() => {
+            lowerControlsContainer.style.display = 'none';
+        }, 300);
+    }
 }
