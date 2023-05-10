@@ -1,8 +1,230 @@
 const aflTeams = ["adelaide", "brisbane", "carlton", "collingwood", "essendon", "fremantle", "geelong", "gold_coast", "gws", "hawthorn", "melbourne", "north_melbourne", "port_adelaide", "richmond", "st_kilda", "sydney", "west_coast", "western_bulldogs"];
-const aflTeamsObject = aflTeams.reduce((obj: any, team) => {
-  obj[team] = [];
-  return obj;
-}, {});
+const redditFlairTeams: flairTeams = {
+  "AFL": "other",
+  "fitzroy4": "other",
+  "fitzroy7": "other",
+  "fitzroy14": "other",
+  "fitzroy15": "other",
+  "bears9": "other",
+  "bears8": "other",
+  "bears13": "other",
+  "bears12": "other",
+  "VFL": "other",
+  "victoria": "other",
+  "SANFL": "other",
+  "southaustralia": "other",
+  "WAFL": "other",
+  "westernaustralia": "other",
+  "tasmania": "other",
+  "allies": "other",
+  "australia": "other",
+  "newzealand": "other",
+  "ireland": "other",
+  "UK": "other",
+  "USA": "other",
+  "canada": "other",
+  "boxingroo": "other",
+  "Leprechaun": "other",
+  "university": "other",
+  "adelaide": "adelaide",
+  "adelaide2": "adelaide",
+  "adelaide3": "adelaide",
+  "adelaide4": "adelaide",
+  "adelaide6": "adelaide",
+  "adelaide10": "adelaide",
+  "adelaide11": "adelaide",
+  "adelaide12": "adelaide",
+  "ADLWEG": "adelaide",
+  "brisbane": "brisbane",
+  "brisbane2": "brisbane",
+  "brisbane3": "brisbane",
+  "brisbane6": "brisbane",
+  "brisbane10": "brisbane",
+  "brisbane11": "brisbane",
+  "BRIWEG": "brisbane",
+  "BRIBW": "brisbane",
+  "carlton": "carlton",
+  "carlton2": "carlton",
+  "carlton3": "carlton",
+  "carlton4": "carlton",
+  "carlton6": "carlton",
+  "carlton10": "carlton",
+  "carlton11": "carlton",
+  "carlton12": "carlton",
+  "CARWEG": "carlton",
+  "collingwood": "collingwood",
+  "collingwood2": "collingwood",
+  "collingwood3": "collingwood",
+  "collingwood6": "collingwood",
+  "collingwood10": "collingwood",
+  "collingwood11": "collingwood",
+  "collingwood12": "collingwood",
+  "COLWEG": "collingwood",
+  "COLBW": "collingwood",
+  "essendon": "essendon",
+  "essendon2": "essendon",
+  "essendon3": "essendon",
+  "essendon6": "essendon",
+  "essendon10": "essendon",
+  "essendon11": "essendon",
+  "essendon12": "essendon",
+  "ESSWEG": "essendon",
+  "AFLW-2022-EssendonW": "essendon",
+  "fremantle": "fremantle",
+  "fremantle2": "fremantle",
+  "fremantle3": "fremantle",
+  "fremantle10": "fremantle",
+  "fremantle11": "fremantle",
+  "fremantle12": "fremantle",
+  "fremantle13": "fremantle",
+  "fremantle14": "fremantle",
+  "fremantle15": "fremantle",
+  "FREBW": "fremantle",
+  "geelong": "geelong",
+  "geelong2": "geelong",
+  "geelong3": "geelong",
+  "geelong6": "geelong",
+  "geelong7": "geelong",
+  "geelong10": "geelong",
+  "geelong11": "geelong",
+  "geelong12": "geelong",
+  "GEEWEG": "geelong",
+  "AFLW-GeelongW": "geelong",
+  "GEEBW": "geelong",
+  "goldcoast": "goldcoast",
+  "goldcoast2": "goldcoast",
+  "goldcoast10": "goldcoast",
+  "goldcoast11": "goldcoast",
+  "goldcoast12": "goldcoast",
+  "AFLW-Gold-CoastW": "goldcoast",
+  "gws": "gws",
+  "gws2": "gws",
+  "gws10": "gws",
+  "gws11": "gws",
+  "gws12": "gws",
+  "hawthorn": "hawthorn",
+  "hawthorn2": "hawthorn",
+  "hawthorn3": "hawthorn",
+  "hawthorn6": "hawthorn",
+  "hawthorn7": "hawthorn",
+  "hawthorn10": "hawthorn",
+  "hawthorn11": "hawthorn",
+  "hawthorn12": "hawthorn",
+  "HAWWEG": "hawthorn",
+  "AFLW-2022-HawthornW": "hawthorn",
+  "melbourne": "melbourne",
+  "melbourne2": "melbourne",
+  "melbourne3": "melbourne",
+  "melbourne4": "melbourne",
+  "melbourne5": "melbourne",
+  "melbourne6": "melbourne",
+  "melbourne7": "melbourne",
+  "melbourne8": "melbourne",
+  "melbourne10": "melbourne",
+  "melbourne11": "melbourne",
+  "melbourne12": "melbourne",
+  "MELWEG": "melbourne",
+  "MELBW": "melbourne",
+  "northmelbourne": "northmelbourne",
+  "northmelbourne2": "northmelbourne",
+  "northmelbourne3": "northmelbourne",
+  "northmelbourne4": "northmelbourne",
+  "northmelbourne6": "northmelbourne",
+  "northmelbourne7": "northmelbourne",
+  "northmelbourne10": "northmelbourne",
+  "northmelbourne11": "northmelbourne",
+  "northmelbourne12": "northmelbourne",
+  "NORWEG": "northmelbourne",
+  "AFLW-NorthW": "northmelbourne",
+  "portadelaide": "portadelaide",
+  "portadelaide2": "portadelaide",
+  "portadelaide3": "portadelaide",
+  "portadelaide10": "portadelaide",
+  "portadelaide11": "portadelaide",
+  "portadelaide12": "portadelaide",
+  "portadelaide13": "portadelaide",
+  "portadelaide14": "portadelaide",
+  "PORWEG": "portadelaide",
+  "AFLW-2022-PortW": "portadelaide",
+  "richmond": "richmond",
+  "richmond2": "richmond",
+  "richmond3": "richmond",
+  "richmond6": "richmond",
+  "richmond7": "richmond",
+  "richmond10": "richmond",
+  "richmond11": "richmond",
+  "richmond12": "richmond",
+  "RICWEG": "richmond",
+  "AFLW-RichmondW": "richmond",
+  "RICBW": "richmond",
+  "stkilda": "stkilda",
+  "stkilda2": "stkilda",
+  "stkilda6": "stkilda",
+  "stkilda7": "stkilda",
+  "stkilda10": "stkilda",
+  "stkilda11": "stkilda",
+  "stkilda12": "stkilda",
+  "stkilda13": "stkilda",
+  "STKWEG": "stkilda",
+  "AFLW-StKildaW": "stkilda",
+  "sydney": "sydney",
+  "sydney3": "sydney",
+  "sydney6": "sydney",
+  "sydney7": "sydney",
+  "sydney10": "sydney",
+  "sydney11": "sydney",
+  "sydney12": "sydney",
+  "sydney13": "sydney",
+  "SYDWEG": "sydney",
+  "SYDBW": "sydney",
+  "AFLW-2022-SydneyW": "sydney",
+  "sydney2": "sydney",
+  "westcoast": "westcoast",
+  "westcoast2": "westcoast",
+  "westcoast3": "westcoast",
+  "westcoast4": "westcoast",
+  "westcoast6": "westcoast",
+  "westcoast10": "westcoast",
+  "westcoast11": "westcoast",
+  "westcoast12": "westcoast",
+  "westcoast13": "westcoast",
+  "WCEWEG": "westcoast",
+  "AFLW-West-CoastW": "westcoast",
+  "westernbulldogs": "westernbulldogs",
+  "westernbulldogs2": "westernbulldogs",
+  "westernbulldogs3": "westernbulldogs",
+  "westernbulldogs4": "westernbulldogs",
+  "westernbulldogs6": "westernbulldogs",
+  "westernbulldogs7": "westernbulldogs",
+  "westernbulldogs10": "westernbulldogs",
+  "westernbulldogs11": "westernbulldogs",
+  "westernbulldogs12": "westernbulldogs",
+  "WBDWEG": "westernbulldogs",
+  "WBDBW": "westernbulldogs"
+}
+
+// add in an option to use a vertical stripe svg or horizontal (adelaide horizontal, collingwood vertical)
+const teamColors: { [key: string]: [string, string] | [string, string, string] } = {
+  'adelaide': ['blue', 'red', 'yellow'],
+  'brisbane': ['maroon', 'gold'],
+  'carlton': ['navy', 'navy'],
+  'collingwood': ['black', 'white'],
+  'essendon': ['red', 'black'],
+  'fremantle': ['purple', 'white'],
+  'geelong': ['white', 'blue'],
+  'goldcoast': ['red', 'yellow'],
+  'gws': ['orange', 'orange'],
+  'hawthorn': ['brown', 'yellow'],
+  'melbourne': ['red', 'blue'],
+  'northmelbourne': ['blue', 'white'],
+  'portadelaide': ['teal', 'black'],
+  'richmond': ['yellow', 'black'],
+  'stkilda': ['white', 'red'],
+  'sydney': ['red', 'white'],
+  'westcoast': ['blue', 'yellow'],
+  'westernbulldogs': ['blue', 'red'],
+  'other': ['white', 'black']
+};
 
 
 async function initObserver() {
@@ -57,7 +279,7 @@ async function initObserver() {
           initExtension(foundMatchingThread);
           extensionInitialized = true;
           observer.disconnect(); // Stop observing when the video player is found
-          break;
+          return;
         }
       }
     }
@@ -92,8 +314,12 @@ function initExtension(foundMatchingThread: string) {
       console.log('video found')
       let idleTimeout: ReturnType<typeof setTimeout>
 
-      const kayoPlayer = document.querySelector('.bvuuzM') as HTMLElement;      // const parentDiv = document.querySelector('.ikIvWZ') as HTMLElement;
+      const kayoPlayer = document.querySelector('.dRKRhr') as HTMLElement // this changes constantly
+      // To find it, find the div with VideoBackingCard in it or the smallest div that encompassses the entire player
+      // player__VideoBackingCard-sc-ocmrm0-1 dRKRhr
+
       if (kayoPlayer) {
+        console.log('found the player')
         kayoPlayer.style.setProperty('left', 'calc(0% - 4vw)', 'important');
         kayoPlayer.style.setProperty('transform', 'translate(0%, -50%)', 'important');
         kayoPlayer.style.setProperty('width', 'calc(100% - 190px)', 'important');
@@ -143,16 +369,13 @@ function initExtension(foundMatchingThread: string) {
           // innerContainer.style.setProperty('height', '100vh', 'important');
 
         }
+      } else {
+        console.log("Can't find video player element")
       }
-
-
-
 
     } else {
       console.log('video not found');
     }
-
-
 
     iframe.onload = () => {
       console.log('iframe loaded');
@@ -164,6 +387,10 @@ function initExtension(foundMatchingThread: string) {
   }
 }
 
+
+interface flairTeams {
+  [key: string]: string;
+}
 
 
 const initSidebar = async (
@@ -201,15 +428,23 @@ const initSidebar = async (
     comments.forEach((comment: redditComment2) => {
       if (!oldComments.some((oldComment) => oldComment.id === comment.id)) {
         const commentDiv = document.createElement("div");
-        const usernameH1 = document.createElement("h3");
         const commentP = document.createElement("p");
+        let usernameH3 = document.createElement('h3')
+
+        const teamKey: string = redditFlairTeams[comment.flair];
+        if (teamKey) {
+          const colours = teamColors[teamKey];
+          usernameH3.innerText = comment.username;
+          const svg = createTeamColorSVG(colours);
+          commentDiv.appendChild(svg);
+        } else {
+          usernameH3.innerText = comment.username;
+        }
 
         commentDiv.className = "comment";
-
-        usernameH1.textContent = comment.username;
         commentP.textContent = comment.comment;
 
-        commentDiv.appendChild(usernameH1);
+        commentDiv.appendChild(usernameH3);
         commentDiv.appendChild(commentP);
         commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
 
@@ -265,6 +500,7 @@ function whoVsWho(threadName: string) {
   return "";
 }
 
+
 function toInitialCap(s: string): string {
   return s
     .split(' ')
@@ -319,4 +555,32 @@ type redditComment2 = {
 }
 
 
+function createTeamColorSVG(colors: string[]): SVGSVGElement {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '25');
+  svg.setAttribute('height', '25');
 
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+  clipPath.setAttribute('id', 'clipCircle');
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', '12.5');
+  circle.setAttribute('cy', '12.5');
+  circle.setAttribute('r', '12.5');
+  clipPath.appendChild(circle);
+  defs.appendChild(clipPath);
+  svg.appendChild(defs);
+
+  const rectHeight = 25 / colors.length;
+  colors.forEach((color, index) => {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('y', String(index * rectHeight));
+    rect.setAttribute('width', '25');
+    rect.setAttribute('height', String(rectHeight));
+    rect.setAttribute('fill', color);
+    rect.setAttribute('clip-path', 'url(#clipCircle)');
+    svg.appendChild(rect);
+  });
+
+  return svg;
+}

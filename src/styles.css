@@ -45,6 +45,7 @@ button {
 .comment h3 {
     display: block;
     margin: 0 0 4px 0;
+    font-size: 1rem;
 }
 
 .comment p {

@@ -69,14 +69,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         const threadLink = request.data.threadLink;
 
-        getRedditComments(threadLink).then((threads) => {
+        getAllRedditComments(threadLink).then((threads) => {
             sendResponse(threads);
         });
         return true; // Required to make the response async
     }
 });
 
-// https://www.reddit.com/${threadLink}.json?limit=10&sort=new&after={timestamp} IS UNIX timestamp
 async function getRedditComments(threadLink: string) {
     try {
         // `https://www.reddit.com/${threadLink}.json?limit=20&sort=new`
@@ -117,4 +116,28 @@ type redditComment = {
     time: number,
     score: number,
     flair: string,
+}
+
+async function getAllRedditComments(threadLink: string) {
+    try {
+        // `https://www.reddit.com/${threadLink}.json?limit=20&sort=new`
+        const response = await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10`);
+        const data = await response.json();
+        const comments = await data[1].data.children;
+
+        // Get all the relevant information we need from each comment
+        const formattedComments: redditComment[] = await comments.map((comment: any) => ({
+            id: comment.data.id,
+            username: comment.data.author,
+            comment: comment.data.body,
+            time: comment.data.created_utc,
+            score: comment.data.score,
+            flair: comment.data.author_flair_css_class,
+        }));
+
+        return formattedComments.reverse();
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        throw new Error("idk man")
+    }
 }

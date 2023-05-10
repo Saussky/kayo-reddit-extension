@@ -1,56 +1,62 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const threadUrl2 = 'r/AFL/comments/1225t2f/match_thread_sydney_swans_vs_hawthorn_round_2/';
 const threadUrl = 'r/AFL/comments/128b8xi/match_thread_gws_giants_vs_carlton_round_3/';
 const initialTime = Math.floor(Date.now() / 1000);
 //1679808333
-async function getRedditCommentes(threadLink, time) {
-    try {
-        const response = await fetch(`https://www.reddit.com/${threadLink}.json?sort=new`);
-        const data = await response.json();
-        const comments = await data[1].data.children;
-        time = Math.floor(Number(new Date()) / 1000);
-        console.log('api has been reached', time);
-        // comments.forEach(async(comment: any) => {
-        //     if (comment.data.created_utc > time - 600) {
-        //         console.log('Comment should be added')
-        //     } else {
-        //         console.log('Comment wont pass time check')
-        //         console.log(comment.data.created_utc, '   ', time)
-        //     }
-        // })
-        // Only use comments that happened after the time argument, unless there's no time argument just get all of them
-        // const filteredComments = time
-        //     ? await comments.filter((comment: any) => comment.data.created_utc > time)
-        //     : comments;
-        // const filteredComments = comments.filter((comment: any) => comment.data.created_utc > (time - 600))
-        const filteredComments = comments;
-        // console.log('filtered', filteredComments)
-        // If there's no comments that passed the criteria, return early
-        if (!filteredComments) {
-            console.log('time issue !!!!!');
-            return [];
+function getRedditCommentes(threadLink, time) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield fetch(`https://www.reddit.com/${threadLink}.json?sort=new`);
+            const data = yield response.json();
+            const comments = yield data[1].data.children;
+            time = Math.floor(Number(new Date()) / 1000);
+            console.log('api has been reached', time);
+            // comments.forEach(async(comment: any) => {
+            //     if (comment.data.created_utc > time - 600) {
+            //         console.log('Comment should be added')
+            //     } else {
+            //         console.log('Comment wont pass time check')
+            //         console.log(comment.data.created_utc, '   ', time)
+            //     }
+            // })
+            // Only use comments that happened after the time argument, unless there's no time argument just get all of them
+            // const filteredComments = time
+            //     ? await comments.filter((comment: any) => comment.data.created_utc > time)
+            //     : comments;
+            // const filteredComments = comments.filter((comment: any) => comment.data.created_utc > (time - 600))
+            const filteredComments = comments;
+            // console.log('filtered', filteredComments)
+            // If there's no comments that passed the criteria, return early
+            if (!filteredComments) {
+                console.log('time issue !!!!!');
+                return [];
+            }
+            ;
+            // Get all the relevant information we need from each comment
+            const formattedComments = yield filteredComments.map((comment) => ({
+                id: comment.data.id,
+                username: comment.data.author,
+                comment: comment.data.body,
+                time: comment.data.created_utc,
+                score: comment.data.score,
+                flair: comment.data.author_flair_css_class,
+            }));
+            console.log(formattedComments);
+            return formattedComments.reverse();
         }
-        ;
-        // Get all the relevant information we need from each comment
-        const formattedComments = await filteredComments.map((comment) => ({
-            id: comment.data.id,
-            username: comment.data.author,
-            comment: comment.data.body,
-            time: comment.data.created_utc,
-            score: comment.data.score,
-            flair: comment.data.author_flair_css_class,
-        }));
-        console.log(formattedComments);
-        return formattedComments.reverse();
-    }
-    catch (error) {
-        console.error("Error fetching comments:", error);
-        throw new Error("idk man");
-    }
+        catch (error) {
+            console.error("Error fetching comments:", error);
+            throw new Error("idk man");
+        }
+    });
 }
 getRedditCommentes(threadUrl2, initialTime);
 // const now = 1679785353
@@ -86,21 +92,23 @@ getRedditCommentes(threadUrl2, initialTime);
 // // If it has enough downvotes, display it? maybe as an option
 // // option for how many upvotes it needs in order to reach the side scroller
 // // Is going to have to return an object { username, flair, comment, upvotes? }
-async function getRedditThreads() {
-    const apiUrl = `https://www.reddit.com/r/afl/hot.json?limit=20&sort=new`;
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        const threads = data.data.children;
-        threads.forEach((thread) => {
-            console.log(thread.data.permalink);
-        });
-        return ['hey'];
-    }
-    catch (error) {
-        console.error('Error fetching stickied threads:', error);
-        return [];
-    }
+function getRedditThreads() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiUrl = `https://www.reddit.com/r/afl/hot.json?limit=20&sort=new`;
+        try {
+            const response = yield fetch(apiUrl);
+            const data = yield response.json();
+            const threads = data.data.children;
+            threads.forEach((thread) => {
+                console.log(thread.data.permalink);
+            });
+            return ['hey'];
+        }
+        catch (error) {
+            console.error('Error fetching stickied threads:', error);
+            return [];
+        }
+    });
 }
 // getRedditThreads()
 // function toInitialCaps(s: string): string {
@@ -117,84 +125,88 @@ async function getRedditThreads() {
 //     return "";
 // }
 // console.log(whoVsWho('/r/AFL/comments/12299n2/match_thread_essendon_vs_gold_coast_round_2'))
-const axios_1 = __importDefault(require("axios"));
-const jsdom_1 = require("jsdom");
-async function fetchRedditAflPage() {
-    try {
-        const response = await axios_1.default.get('https://www.reddit.com/r/AFL/');
-        const dom = new jsdom_1.JSDOM(response.data);
-        const doc = dom.window.document;
-        const flairOptionPaneDiv = doc.querySelector('.flairoptionpane');
-        if (!flairOptionPaneDiv) {
-            throw new Error('Flairoptionpane div not found');
+import axios from 'axios';
+import { JSDOM } from 'jsdom';
+function fetchRedditAflPage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield axios.get('https://www.reddit.com/r/AFL/');
+            const dom = new JSDOM(response.data);
+            const doc = dom.window.document;
+            const flairOptionPaneDiv = doc.querySelector('.flairoptionpane');
+            if (!flairOptionPaneDiv) {
+                throw new Error('Flairoptionpane div not found');
+            }
+            const ul = flairOptionPaneDiv.querySelector('ul');
+            if (!ul) {
+                throw new Error('Target ul not found');
+            }
+            // Continue processing the ul element
         }
-        const ul = flairOptionPaneDiv.querySelector('ul');
-        if (!ul) {
-            throw new Error('Target ul not found');
+        catch (error) {
+            console.error('Error fetching Reddit page:', error);
         }
-        // Continue processing the ul element
-    }
-    catch (error) {
-        console.error('Error fetching Reddit page:', error);
-    }
+    });
 }
-async function fetchRedditAflPage2() {
-    try {
-        const response = await axios_1.default.get('https://www.reddit.com/r/AFL/');
-        const html = response.data;
-        // Parse the HTML content using JSDOM
-        const dom = new jsdom_1.JSDOM(html);
-        const doc = dom.window.document;
-        // Find the ul element with the specified style
-        const ulElements = doc.querySelectorAll('ul');
-        const targetUl = Array.from(ulElements).find((ul) => ul.getAttribute('style') === 'width: 150px; float: left;');
-        if (!targetUl) {
-            throw new Error('Target ul not found');
-        }
-        console.log('hey');
-        // Extract the span elements
-        const spanElements = targetUl.querySelectorAll('li > span');
-        // Initialize the aflTeamsObject
-        const aflTeamsObject = {
-            adelaide: [],
-            brisbane: [],
-            carlton: [],
-            collingwood: [],
-            essendon: [],
-            fremantle: [],
-            geelong: [],
-            gold_coast: [],
-            gws: [],
-            hawthorn: [],
-            melbourne: [],
-            north_melbourne: [],
-            port_adelaide: [],
-            richmond: [],
-            st_kilda: [],
-            sydney: [],
-            west_coast: [],
-            western_bulldogs: [],
-        };
-        // Iterate through the span elements and extract the relevant class names
-        spanElements.forEach((span) => {
-            const classNames = span.className.split(' ');
-            classNames.forEach((className) => {
-                if (className.startsWith('flair-')) {
-                    const teamName = className.substring(6);
-                    if (aflTeamsObject.hasOwnProperty(teamName)) {
-                        aflTeamsObject[teamName].push(className);
+function fetchRedditAflPage2() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield axios.get('https://www.reddit.com/r/AFL/');
+            const html = response.data;
+            // Parse the HTML content using JSDOM
+            const dom = new JSDOM(html);
+            const doc = dom.window.document;
+            // Find the ul element with the specified style
+            const ulElements = doc.querySelectorAll('ul');
+            const targetUl = Array.from(ulElements).find((ul) => ul.getAttribute('style') === 'width: 150px; float: left;');
+            if (!targetUl) {
+                throw new Error('Target ul not found');
+            }
+            console.log('hey');
+            // Extract the span elements
+            const spanElements = targetUl.querySelectorAll('li > span');
+            // Initialize the aflTeamsObject
+            const aflTeamsObject = {
+                adelaide: [],
+                brisbane: [],
+                carlton: [],
+                collingwood: [],
+                essendon: [],
+                fremantle: [],
+                geelong: [],
+                gold_coast: [],
+                gws: [],
+                hawthorn: [],
+                melbourne: [],
+                north_melbourne: [],
+                port_adelaide: [],
+                richmond: [],
+                st_kilda: [],
+                sydney: [],
+                west_coast: [],
+                western_bulldogs: [],
+            };
+            // Iterate through the span elements and extract the relevant class names
+            spanElements.forEach((span) => {
+                const classNames = span.className.split(' ');
+                classNames.forEach((className) => {
+                    if (className.startsWith('flair-')) {
+                        const teamName = className.substring(6);
+                        if (aflTeamsObject.hasOwnProperty(teamName)) {
+                            aflTeamsObject[teamName].push(className);
+                        }
                     }
-                }
+                });
             });
-        });
-        console.log(aflTeamsObject);
-    }
-    catch (error) {
-        console.error('Error fetching Reddit page:', error);
-    }
+            console.log(aflTeamsObject);
+        }
+        catch (error) {
+            console.error('Error fetching Reddit page:', error);
+        }
+    });
 }
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import dotenv from 'dotenv';
+dotenv.config();
 const generateOAuthLink = (apiCredentials) => {
     const clientId = apiCredentials.clientId;
     const redirectUri = encodeURIComponent('http://localhost:8080');
@@ -211,9 +223,9 @@ const apiCredentials = {
 };
 // const oauthLink = generateOAuthLink(apiCredentials);
 // console.log(oauthLink);
-const getAccessToken = async (apiCredentials, code, redirectUri) => {
+const getAccessToken = (apiCredentials, code, redirectUri) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = await axios_1.default.post('https://www.reddit.com/api/v1/access_token', `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(redirectUri)}`, {
+        const response = yield axios.post('https://www.reddit.com/api/v1/access_token', `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(redirectUri)}`, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': `Basic ${Buffer.from(`user:${apiCredentials.clientId}:${apiCredentials.clientSecret}`).toString('base64')}`,
@@ -226,7 +238,7 @@ const getAccessToken = async (apiCredentials, code, redirectUri) => {
         console.error('Failed to retrieve access token:', error);
         return null;
     }
-};
+});
 // getAccessToken(apiCredentials, 'jX6tYBIIluGgkRQxIkjg5o0C5zlWCQ#_', 'http://localhost:8080')
 // async function fetchRedditFlair(accessToken: string) {
 //   try {
