@@ -203,27 +203,85 @@ const redditFlairTeams: flairTeams = {
   "WBDBW": "westernbulldogs"
 }
 
+interface teamLogo {
+  direction: 'horizontal' | 'vertical' | 'diagonal',
+  colours: string[]
+}
+
 // add in an option to use a vertical stripe svg or horizontal (adelaide horizontal, collingwood vertical)
-const teamColors: { [key: string]: [string, string] | [string, string, string] } = {
-  'adelaide': ['blue', 'red', 'yellow'],
-  'brisbane': ['maroon', 'gold'],
-  'carlton': ['navy', 'navy'],
-  'collingwood': ['black', 'white'],
-  'essendon': ['red', 'black'],
-  'fremantle': ['purple', 'white'],
-  'geelong': ['white', 'blue'],
-  'goldcoast': ['red', 'yellow'],
-  'gws': ['orange', 'orange'],
-  'hawthorn': ['brown', 'yellow'],
-  'melbourne': ['red', 'blue'],
-  'northmelbourne': ['blue', 'white'],
-  'portadelaide': ['teal', 'black'],
-  'richmond': ['yellow', 'black'],
-  'stkilda': ['white', 'red'],
-  'sydney': ['red', 'white'],
-  'westcoast': ['blue', 'yellow'],
-  'westernbulldogs': ['blue', 'red'],
-  'other': ['white', 'black']
+const teamColors: { [key: string]: teamLogo } = {
+  'adelaide': {
+    direction: 'horizontal',
+    colours: ['blue', 'red', 'yellow']
+  },
+  'brisbane': {
+    direction: 'horizontal',
+    colours: ['maroon', 'gold', 'blue']
+  },
+  'carlton': {
+    direction: 'horizontal',
+    colours: ['navy', 'navy']
+  },
+  'collingwood': {
+    direction: 'vertical',
+    colours: ['black', 'white']
+  },
+  'essendon': {
+    direction: 'diagonal',
+    colours: ['red', 'black']
+  },
+  'fremantle': {
+    direction: 'horizontal', // technically not horizontal, can customize this one
+    colours: ['purple', 'white']
+  },
+  'geelong': {
+    direction: 'horizontal',
+    colours: ['white', 'blue']
+  },
+  'goldcoast': {
+    direction: 'diagonal',
+    colours: ['red', 'yellow']
+  },
+  'gws': {
+    direction: 'horizontal',
+    colours: ['orange', 'orange']
+  },
+  'hawthorn': {
+    direction: 'vertical',
+    colours: ['brown', 'yellow']
+  },
+  'melbourne': {
+    direction: 'horizontal',
+    colours: ['red', 'blue']
+  },
+  'northmelbourne': {
+    direction: 'vertical',
+    colours: ['blue', 'white']
+  },
+  'portadelaide': {
+    direction: 'vertical',
+    colours: ['teal', 'black', 'white']
+  },
+  'richmond': {
+    direction: 'diagonal',
+    colours: ['yellow', 'black']
+  },
+  'stkilda': {
+    direction: 'vertical',
+    colours: ['white', 'red']
+  },
+  'sydney': {
+    direction: 'horizontal',
+    colours: ['red', 'white']
+  },
+  'westcoast': {
+    direction: 'vertical',
+    colours: ['yellow', 'blue', 'yellow']
+  },
+  'westernbulldogs': {
+    direction: 'horizontal',
+    colours: ['white', 'blue', 'red'],
+  },
 };
 
 
@@ -254,7 +312,7 @@ async function initObserver() {
           });
         });
 
-        redditTeams = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']
+        //redditTeams = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']
 
         let foundMatchingThread: string = '';
         for (const thread of redditTeams) {
@@ -314,7 +372,7 @@ function initExtension(foundMatchingThread: string) {
       console.log('video found')
       let idleTimeout: ReturnType<typeof setTimeout>
 
-      const kayoPlayer = document.querySelector('.dRKRhr') as HTMLElement // this changes constantly
+      const kayoPlayer = document.querySelector('.dEFcqv') as HTMLElement // this changes constantly
       // To find it, find the div with VideoBackingCard in it or the smallest div that encompassses the entire player
       // player__VideoBackingCard-sc-ocmrm0-1 dRKRhr
 
@@ -432,19 +490,30 @@ const initSidebar = async (
         let usernameH3 = document.createElement('h3')
 
         const teamKey: string = redditFlairTeams[comment.flair];
+        const userContainer = document.createElement('div');
+        userContainer.style.display = 'flex';
+        userContainer.style.alignItems = 'center';
         if (teamKey) {
-          const colours = teamColors[teamKey];
+          const teamLogo = teamColors[teamKey];
           usernameH3.innerText = comment.username;
-          const svg = createTeamColorSVG(colours);
-          commentDiv.appendChild(svg);
+
+          try {
+            const svg = createTeamColorSVG(teamLogo);
+            userContainer.appendChild(svg);
+          } catch (err) {
+            console.log(err)
+          }
+
         } else {
           usernameH3.innerText = comment.username;
         }
 
+        userContainer.appendChild(usernameH3);
+        commentDiv.appendChild(userContainer);
+
         commentDiv.className = "comment";
         commentP.textContent = comment.comment;
 
-        commentDiv.appendChild(usernameH3);
         commentDiv.appendChild(commentP);
         commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
 
@@ -452,6 +521,8 @@ const initSidebar = async (
         oldComments.push(comment);
       }
     });
+
+
 
     // Getting the max time of the previous comments and passing that in to getRedditComments as an argument would be better
     // but it hasn't been working
@@ -555,32 +626,71 @@ type redditComment2 = {
 }
 
 
-function createTeamColorSVG(colors: string[]): SVGSVGElement {
+function createTeamColorSVG(teamLogo: teamLogo): SVGSVGElement {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('width', '25');
-  svg.setAttribute('height', '25');
+  svg.setAttribute('width', '20');
+  svg.setAttribute('height', '20');
 
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
   clipPath.setAttribute('id', 'clipCircle');
   const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  circle.setAttribute('cx', '12.5');
-  circle.setAttribute('cy', '12.5');
-  circle.setAttribute('r', '12.5');
+  circle.setAttribute('cx', '10');
+  circle.setAttribute('cy', '10');
+  circle.setAttribute('r', '10');
   clipPath.appendChild(circle);
   defs.appendChild(clipPath);
   svg.appendChild(defs);
 
-  const rectHeight = 25 / colors.length;
-  colors.forEach((color, index) => {
+  const colors = teamLogo.colours;
+  const direction = teamLogo.direction;
+
+  if (direction === 'horizontal') {
+    const rectHeight = 20 / colors.length;
+    colors.forEach((color, index) => {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('y', String(index * rectHeight));
+      rect.setAttribute('width', '20');
+      rect.setAttribute('height', String(rectHeight));
+      rect.setAttribute('fill', color);
+      rect.setAttribute('clip-path', 'url(#clipCircle)');
+      svg.appendChild(rect);
+    });
+  }
+  else if (direction === 'vertical') {
+    const rectWidth = 20 / 3;
+    for (let index = 0; index < 3; index++) {
+      const color = colors[index % colors.length];
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', String(index * rectWidth));
+      rect.setAttribute('width', String(rectWidth));
+      rect.setAttribute('height', '20');
+      rect.setAttribute('fill', color);
+      rect.setAttribute('clip-path', 'url(#clipCircle)');
+      svg.appendChild(rect);
+    }
+  }
+  else if (direction === 'diagonal') {
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('y', String(index * rectHeight));
-    rect.setAttribute('width', '25');
-    rect.setAttribute('height', String(rectHeight));
-    rect.setAttribute('fill', color);
+    rect.setAttribute('x', '-18');
+    rect.setAttribute('y', '5');
+    rect.setAttribute('width', '88');
+    rect.setAttribute('height', '8');
+    rect.setAttribute('transform', 'rotate(-45 10 10)');
+    rect.setAttribute('fill', colors[0]);
     rect.setAttribute('clip-path', 'url(#clipCircle)');
     svg.appendChild(rect);
-  });
+  
+    const backgroundRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    backgroundRect.setAttribute('width', '20');
+    backgroundRect.setAttribute('height', '20');
+    backgroundRect.setAttribute('fill', colors[1]);
+    backgroundRect.setAttribute('clip-path', 'url(#clipCircle)');
+    svg.insertBefore(backgroundRect, rect);
+  }
+  
 
   return svg;
 }
+
+
