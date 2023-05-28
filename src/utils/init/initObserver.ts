@@ -1,7 +1,8 @@
-import { commonValues, extractTeamName } from "../misc";
+import { extractTeamName } from "../misc";
 import initExtension from "./initExtension";
 import { checkURL, findMatchingThread } from "../misc";
 import { getRedditThreads } from "../reddit/fetchThreads";
+import { prod } from "src/content";
 
 
 let video: HTMLVideoElement | null = null;
@@ -24,7 +25,7 @@ export default async function initObserver() {
 
                 const kayoTeams: string[] = extractTeamName(url);
                 let redditThreads: string[] = await getRedditThreads();
-                redditThreads = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']; // for testing
+                if (!prod) redditThreads = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']
 
                 const foundMatchingThread = findMatchingThread(kayoTeams, redditThreads);
                 if (!foundMatchingThread) {
