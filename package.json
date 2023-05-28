@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "build": "parcel build src/sidebar.ts src/content.ts --no-source-maps"
+        "build": "webpack"
     },
     "dependencies": {
         "@types/axios": "^0.14.0",
@@ -13,6 +13,9 @@
         "@types/jsdom": "^21.1.1",
         "@types/webextension-polyfill": "^0.10.0",
         "buffer": "^5.7.1",
-        "parcel": "^2.8.3"
+        "parcel": "^2.8.3",
+        "ts-loader": "^9.4.3",
+        "webpack": "^5.84.1",
+        "webpack-cli": "^5.1.1"
     }
 }

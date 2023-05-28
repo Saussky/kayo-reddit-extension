@@ -70,13 +70,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const threadLink = request.data.threadLink;
 
         // Testing thread
-        // getAllRedditComments(threadLink).then((threads) => {
-        //     sendResponse(threads);
-        // });
-
-        getRedditComments(threadLink).then((threads) => {
+        getAllRedditComments(threadLink).then((threads) => {
             sendResponse(threads);
         });
+
+        // getRedditComments(threadLink).then((threads) => {
+        //     sendResponse(threads);
+        // });
 
         return true; // Required to make the response async
     }

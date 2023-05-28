@@ -20,7 +20,7 @@
     },
     "content_security_policy": "script-src 'self'; object-src 'self';",
     "web_accessible_resources": [
-        "js/sidebar.js",
+        "./src/js/sidebar.js",
         "sidebar.html",
         "styles.css"
     ],
@@ -29,7 +29,7 @@
     },
     "background": {
         "scripts": [
-            "js/background.js"
+            "./dist/background.js"
         ],
         "persistent": false
     },      
@@ -39,7 +39,7 @@
                 "*://*.kayosports.com.au/*"
             ],
             "js": [
-                "js/content.js"
+                "./dist/content.js"
             ],
             "css": [
                 "styles.css"
