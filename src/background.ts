@@ -2,7 +2,13 @@
 import { redditComment } from "./interfaces";
 import { prod } from "./content";
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+
+
+chrome.runtime.onMessage.addListener((
+    request: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: Function) => {
     if (request.action === "getRedditThreads") {
         console.log('MESSAGE SENT')
         getStickiedThreads().then((threads) => {
@@ -33,7 +39,10 @@ async function getStickiedThreads(): Promise<string[]> {
 }
 
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((
+    request: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: Function) => {
     if (request.action === "getRedditComments") {
         console.log("GETTING REDDIT COMMENTS");
 
