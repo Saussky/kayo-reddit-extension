@@ -17,11 +17,13 @@ export default function formatTickerComment(comment: redditComment): HTMLDivElem
   const usernameNode = document.createElement("h3");
   usernameNode.style.display = "inline-block";
   usernameNode.style.color = "white";
+  usernameNode.style.marginRight = "2px";
   usernameNode.innerText = comment.username + ':';
 
   const commentNode = document.createElement("p");
   commentNode.style.display = "inline-block";
   commentNode.style.color = "white";
+  commentNode.style.marginRight = "2px";
   commentNode.innerText = comment.comment;
 
   tickerItem.appendChild(svgNode);

@@ -19,24 +19,26 @@ export default async function initSidebar(
     const newsTicker = createTicker(video);
     handleFullscreenChange(commentContainer, newsTicker);
 
-    let oldComments: redditComment[] = []
+    // let oldComments: redditComment[] = []
+    let oldComments: Map<string, redditComment> = new Map();
 
     const fetchNewComments = async () => {
         const comments = await fetchComments(foundMatchingThread);
-
-        const newComments = comments.filter((comment) => !oldComments.some((oldComment) => oldComment.id === comment.id));
+    
+        const newComments = comments.filter((comment) => !oldComments.has(comment.id));
         newComments.forEach((comment: redditComment) => {
             if (document.fullscreenElement) {
-                const commentDiv = formatTickerComment(comment)
+                const commentDiv = formatTickerComment(comment);
                 addNewsTickerItem(commentDiv, newsTicker);
             } else {
-                const commentDiv = formatSidebarComment(comment); // will likely need a ticker format and a sidebar format
+                const commentDiv = formatSidebarComment(comment); 
                 commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
             }
         });
-
-        oldComments.push(...newComments);
+    
+        newComments.forEach((comment) => oldComments.set(comment.id, comment));
     };
+    
 
     await fetchNewComments();
     setInterval(fetchNewComments, 1000);
