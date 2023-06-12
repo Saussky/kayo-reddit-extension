@@ -3,6 +3,7 @@ import redditFlairTeamsData from '../../static/afl/redditFlair.json'
 import teamColoursData from '../../static/afl/teamColours.json'
 import createTeamColorSVG from '../svg/sidebar';
 
+
 const teamColours = teamColoursData as TeamLogos;
 const redditFlairTeams = redditFlairTeamsData as RedditFlair
 
