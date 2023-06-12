@@ -1,4 +1,5 @@
-import { TeamLogo } from "src/interfaces";
+import { TeamLogo } from "../../interfaces";
+
 
 export default function createTeamColorSVG(teamLogo: TeamLogo): SVGSVGElement {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

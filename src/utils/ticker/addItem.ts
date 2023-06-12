@@ -1,5 +1,6 @@
 import animateTickerItem from "./animate";
 
+
 export default function addNewsTickerItem(element: HTMLElement, newsTicker: HTMLElement): void {
     const tickerItem = element.cloneNode(true) as HTMLElement;
     tickerItem.style.cssText = `

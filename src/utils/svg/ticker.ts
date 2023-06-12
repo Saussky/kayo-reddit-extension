@@ -1,4 +1,4 @@
-import { TeamLogo } from "src/interfaces";
+import { TeamLogo } from "../../interfaces";
 
 
 let idCounter = 0

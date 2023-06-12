@@ -1,8 +1,10 @@
 import { redditComment } from '../../interfaces';
 import fetchComments from '../reddit/fetchComments';
-import formatRedditComment from '../reddit/formatComment';
+import formatSidebarComment from '../reddit/formatSidebarComment';
 import createTicker from '../ticker/create';
 import handleFullscreenChange from '../kayo/fullscreen';
+import addNewsTickerItem from '../ticker/addItem';
+import formatTickerComment from '../reddit/formatTickerComment';
 
 
 export default async function initSidebar(
@@ -24,8 +26,13 @@ export default async function initSidebar(
 
         const newComments = comments.filter((comment) => !oldComments.some((oldComment) => oldComment.id === comment.id));
         newComments.forEach((comment: redditComment) => {
-            const commentDiv = formatRedditComment(comment);
-            commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
+            if (document.fullscreenElement) {
+                const commentDiv = formatTickerComment(comment)
+                addNewsTickerItem(commentDiv, newsTicker);
+            } else {
+                const commentDiv = formatSidebarComment(comment); // will likely need a ticker format and a sidebar format
+                commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
+            }
         });
 
         oldComments.push(...newComments);

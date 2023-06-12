@@ -2,8 +2,7 @@ import { extractTeamName } from "../misc";
 import initExtension from "./initExtension";
 import { checkURL, findMatchingThread } from "../misc";
 import { getRedditThreads } from "../reddit/fetchThreads";
-import { prod } from "src/content";
-
+import { prod } from "../../content";
 
 let video: HTMLVideoElement | null = null;
 
@@ -48,4 +47,3 @@ export default async function initObserver() {
 
     observer.observe(targetNode, config);
 }
-initObserver();
