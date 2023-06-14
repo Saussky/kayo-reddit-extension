@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  watch: true,
   entry: {
     background: './src/background.ts',
     content: './src/content.ts'
