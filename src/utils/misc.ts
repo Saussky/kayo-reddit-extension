@@ -16,13 +16,16 @@ export const checkURL = (url: string): boolean => {
     return true;
 }
 
-export const findMatchingThread = (kayoTeams: string[], redditThreads: string[]): string => {
+export const findMatchingThread = (kayoTeams: string[], redditThreads: string[]): string => {    
     let foundMatchingThread: string = '';
+    
     for (const thread of redditThreads) {
         const game = extractTeamName(thread);
+        console.log(game)
 
         if (commonValues(kayoTeams, game).length >= 2) {
             foundMatchingThread = thread;
+            break;  // This will break the loop after finding the match
         }
     }
     return foundMatchingThread;

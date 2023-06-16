@@ -24,7 +24,8 @@ export default async function initObserver() {
 
                 const kayoTeams: string[] = extractTeamName(url);
                 let redditThreads: string[] = await getRedditThreads();
-                if (!prod) redditThreads = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']
+                // if (!prod) redditThreads = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']
+                if (!prod) redditThreads = ['r/AFL/comments/1492jvm/pre_round_discussion_thread_round_14_2023/']
 
                 const foundMatchingThread = findMatchingThread(kayoTeams, redditThreads);
                 if (!foundMatchingThread) {
