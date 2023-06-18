@@ -40,3 +40,5 @@ export default function animateTickerItem(tickerItem: HTMLElement, newsTicker: H
         }, {once: true});
     });
 }
+
+
