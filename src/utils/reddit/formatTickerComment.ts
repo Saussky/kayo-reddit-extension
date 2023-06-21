@@ -3,7 +3,6 @@ import { teamColours, redditFlairTeams } from '../misc';
 import createTeamColorSVG from '../svg/ticker';
 
 
-
 export default function formatTickerComment(comment: redditComment): HTMLDivElement {
   const tickerItem = document.createElement("div");
   tickerItem.className = 'ticker__item';

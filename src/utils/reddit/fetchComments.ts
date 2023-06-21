@@ -2,9 +2,8 @@ import { redditComment } from "src/interfaces";
 import { prod } from '../../content'
 
 
-export default async function getRedditComments(threadLink: string) {
+export async function getRedditComments(threadLink: string) {
     try {
-        console.log('fuck you')
         let response = prod 
         ? await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10&cacheBuster=${Date.now()}`) 
         : await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10`);
@@ -29,11 +28,18 @@ export default async function getRedditComments(threadLink: string) {
             return acc;
         }, []);
 
-        console.log('balls', formattedComments)
 
         return formattedComments.reverse();
     } catch (error) {
         console.error("Error fetching comments:", error);
-        throw new Error("idk man")
+        throw new Error("Failed to get Reddit comments")
     }
+}
+
+export async function getCommentsFromBackground(foundMatchingThread: string): Promise<redditComment[]> {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread } }, (response) => {
+            resolve(response);
+        });
+    });
 }
