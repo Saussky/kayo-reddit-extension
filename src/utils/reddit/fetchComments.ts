@@ -1,12 +1,39 @@
 import { redditComment } from "src/interfaces";
+import { prod } from '../../content'
 
 
-export default async function fetchComments(foundMatchingThread: string): Promise<redditComment[]> {
-    const comments: redditComment[] = await new Promise((resolve) => {
-        chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread } }, (response) => {
-            resolve(response);
-        });
-    });
+export default async function getRedditComments(threadLink: string) {
+    try {
+        console.log('fuck you')
+        let response = prod 
+        ? await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10&cacheBuster=${Date.now()}`) 
+        : await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10`);
+    
+        const data = await response.json();
+        const comments = await data[1].data.children;
+        const time = Math.floor(Number(new Date()) / 1000);
 
-    return comments;
+        console.log('api has been reached  ', time)
+
+        const formattedComments: redditComment[] = await comments.reduce((acc: redditComment[], comment: any) => {
+            if (comment.data.created_utc > (time - 600)) {
+                acc.push({
+                    id: comment.data.id,
+                    username: comment.data.author,
+                    comment: comment.data.body,
+                    time: comment.data.created_utc,
+                    score: comment.data.score,
+                    flair: comment.data.author_flair_css_class,
+                });
+            }
+            return acc;
+        }, []);
+
+        console.log('balls', formattedComments)
+
+        return formattedComments.reverse();
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        throw new Error("idk man")
+    }
 }

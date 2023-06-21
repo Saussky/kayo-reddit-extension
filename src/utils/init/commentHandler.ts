@@ -1,5 +1,4 @@
 import { redditComment } from '../../interfaces';
-import fetchComments from '../reddit/fetchComments';
 import formatSidebarComment from '../reddit/formatSidebarComment';
 import addNewsTickerItem from '../ticker/addItem';
 import formatTickerComment from '../reddit/formatTickerComment';
@@ -10,8 +9,13 @@ export default async function fetchAndDisplayComments(
     newsTicker: HTMLElement,
     commentContainer: HTMLElement,
     seenCommentIDs: Set<string>
-    ) {
-    const comments = await fetchComments(foundMatchingThread);
+) {
+    // Fetches reddit comments from the background.ts folderr
+    const comments: redditComment[] = await new Promise((resolve) => {
+        chrome.runtime.sendMessage({ action: "getRedditComments", data: { threadLink: foundMatchingThread } }, (response) => {
+            resolve(response);
+        });
+    });
     const newComments = comments.filter((comment) => !seenCommentIDs.has(comment.id));
 
     newComments.forEach((comment: redditComment) => {
@@ -26,10 +30,12 @@ function displayComment(comment: redditComment, newsTicker: HTMLElement, comment
         const commentDiv = formatTickerComment(comment);
         addNewsTickerItem(commentDiv, newsTicker);
     } else {
-        const commentDiv = formatSidebarComment(comment); 
-        commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
+        if (!prod) {
+            const commentDivTest = formatTickerComment(comment);
+            addNewsTickerItem(commentDivTest, newsTicker);
+        }
 
-        // Loads ticker items without it being live
-        if (!prod) addNewsTickerItem(commentDiv, newsTicker);
+        const commentDiv = formatSidebarComment(comment);
+        commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
     }
 } 

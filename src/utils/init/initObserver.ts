@@ -1,14 +1,14 @@
-import { extractTeamName } from "../misc";
+import { extractTeamName, checkURL, findMatchingThread } from "../misc";
 import initExtension from "./initExtension";
-import { checkURL, findMatchingThread } from "../misc";
 import { getRedditThreads } from "../reddit/fetchThreads";
 import { prod } from "../../content";
 
+
+const config = { childList: true, subtree: true };
 let video: HTMLVideoElement | null = null;
 
 export default async function initObserver() {
     const targetNode = document.body as HTMLElement;
-    const config = { childList: true, subtree: true };
     let extensionInitialized = false;
 
     const observer = new MutationObserver(async (mutationsList, observer) => {
@@ -16,33 +16,25 @@ export default async function initObserver() {
             return;
         }
 
-        const url: string = window.location.href;
+        const url = window.location.href;
+        if (!checkURL(url)) return;
 
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                if (!checkURL(url)) break;
+        const kayoTeams = extractTeamName(url);
+        const redditThreads = prod ? await getRedditThreads() : ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/'];
 
-                const kayoTeams: string[] = extractTeamName(url);
-                let redditThreads: string[] = await getRedditThreads();
-                // if (!prod) redditThreads = ['r/AFL/comments/1299rcy/match_thread_melbourne_vs_sydney_round_3/']
-                if (!prod) redditThreads = ['r/AFL/comments/1492jvm/pre_round_discussion_thread_round_14_2023/']
-
-                const foundMatchingThread = findMatchingThread(kayoTeams, redditThreads);
-                if (!foundMatchingThread) {
-                    console.log("Couldn't find matching reddit thread");
-                    break;
-                }
-                console.log('matching thread', foundMatchingThread)
-
-                video = document.querySelector('video')!;
-                if (video) {
-                    initExtension(video, foundMatchingThread);
-                    extensionInitialized = true;
-                    observer.disconnect(); // Stop observing when the video player is found
-                    video = null; // reset video variable
-                    return;
-                }
-            }
+        const foundMatchingThread = findMatchingThread(kayoTeams, redditThreads);
+        if (!foundMatchingThread) {
+            console.log("Couldn't find matching reddit thread");
+            return;
+        }
+        
+        console.log('matching thread', foundMatchingThread);
+        video = document.querySelector('video');
+        if (video) {
+            initExtension(video, foundMatchingThread);
+            extensionInitialized = true;
+            observer.disconnect(); // Stop observing when the video player is found
+            video = null; // reset video variable
         }
     });
 

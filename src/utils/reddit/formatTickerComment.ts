@@ -1,18 +1,24 @@
-import { RedditFlair, redditComment, TeamLogos } from '../../interfaces';
-import redditFlairTeamsData from '../../static/afl/redditFlair.json'
-import teamColoursData from '../../static/afl/teamColours.json'
-import createTeamColorSVG from '../svg/sidebar';
+import { redditComment } from '../../interfaces';
+import { teamColours, redditFlairTeams } from '../misc';
+import createTeamColorSVG from '../svg/ticker';
 
 
-const teamColours = teamColoursData as TeamLogos;
-const redditFlairTeams = redditFlairTeamsData as RedditFlair
 
 export default function formatTickerComment(comment: redditComment): HTMLDivElement {
   const tickerItem = document.createElement("div");
   tickerItem.className = 'ticker__item';
-  
-  const svgNode = createTeamColorSVG(teamColours[redditFlairTeams[comment.flair]]);
-  svgNode.style.marginRight = "2px";
+
+  const teamKey = redditFlairTeams[comment.flair];
+
+  if (teamKey) {
+    try {
+      const svgNode = createTeamColorSVG(teamColours[teamKey]);
+      svgNode.style.marginRight = "2px";
+      tickerItem.appendChild(svgNode);
+    } catch (err) {
+      console.error('Error while creating SVG:', err);
+    }
+  }
 
   const usernameNode = document.createElement("h3");
   usernameNode.style.display = "inline-block";
@@ -26,7 +32,6 @@ export default function formatTickerComment(comment: redditComment): HTMLDivElem
   commentNode.style.marginRight = "2px";
   commentNode.innerText = comment.comment;
 
-  tickerItem.appendChild(svgNode);
   tickerItem.appendChild(usernameNode);
   tickerItem.appendChild(commentNode);
 

@@ -1,11 +1,7 @@
-import { RedditFlair, redditComment, TeamLogos } from '../../interfaces';
-import redditFlairTeamsData from '../../static/afl/redditFlair.json'
-import teamColoursData from '../../static/afl/teamColours.json'
+import { redditComment } from '../../interfaces';
+import { teamColours, redditFlairTeams } from '../misc';
 import createTeamColorSVG from '../svg/sidebar';
 
-
-const teamColours = teamColoursData as TeamLogos;
-const redditFlairTeams = redditFlairTeamsData as RedditFlair
 
 export default function formatRedditComment(comment: redditComment): HTMLDivElement {
   const commentDiv = document.createElement('div');

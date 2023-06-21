@@ -8,13 +8,13 @@ export default function createTicker(video: HTMLVideoElement): HTMLElement {
       width: 100%;
       height: 30px;
       overflow: hidden;
-      background-color: rgba(0, 0, 0, 0.5);
       box-sizing: content-box;
       display: flex;
       align-items: center;
       white-space: nowrap;
       z-index: 999;
       display: none;
+      background-color: rgba(0, 0, 0, 0.09);
     `;
 
     video.parentElement!.appendChild(ticker);

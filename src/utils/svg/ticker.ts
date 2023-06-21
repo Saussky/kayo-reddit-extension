@@ -10,10 +10,14 @@ export default function createTickerSVG(teamLogo: TeamLogo): SVGSVGElement {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', '20');
   svg.setAttribute('height', '20');
+  console.log('hiiii')
 
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  console.log('heyy')
   const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+  console.log('delili')
   clipPath.setAttribute('id', uniqueId);
+  
 
   const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
   circle.setAttribute('cx', '10');
@@ -22,9 +26,12 @@ export default function createTickerSVG(teamLogo: TeamLogo): SVGSVGElement {
   clipPath.appendChild(circle);
   defs.appendChild(clipPath);
   svg.appendChild(defs);
+  console.log('there')
 
+  console.log(teamLogo)
   const colors = teamLogo.colours;
   const direction = teamLogo.direction;
+  console.log('rivers')
 
   if (direction === 'horizontal') {
     const rectHeight = 20 / colors.length;
