@@ -6,6 +6,10 @@ import { getCommentsFromBackground } from '../reddit/fetchComments';
 import { prod } from '../../content';
 
 
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default async function fetchAndDisplayComments(
     foundMatchingThread: string,
     newsTicker: HTMLElement,
@@ -17,7 +21,9 @@ export default async function fetchAndDisplayComments(
     const newComments = comments.filter((comment) => !seenCommentIDs.has(comment.id));
 
     newComments.forEach((comment: redditComment) => {
-        displayComment(comment, newsTicker, commentContainer, seenCommentIDs)
+        displayComment(comment, newsTicker, commentContainer)
+        seenCommentIDs.add(comment.id);
+        sleep(1000)
     });
 
     newComments.forEach((comment) => seenCommentIDs.add(comment.id));
@@ -26,7 +32,6 @@ export default async function fetchAndDisplayComments(
 function displayComment(comment: redditComment,
     newsTicker: HTMLElement,
     commentContainer: HTMLElement,
-    seenCommentIDs: Set<string>
     ) {
     if (document.fullscreenElement) {
         const commentDiv = formatTickerComment(comment);
@@ -40,5 +45,4 @@ function displayComment(comment: redditComment,
         const commentDiv = formatSidebarComment(comment);
         commentContainer.insertBefore(commentDiv, commentContainer.firstChild);
     }
-    seenCommentIDs.add(comment.id);
 } 

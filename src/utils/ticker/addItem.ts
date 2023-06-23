@@ -8,8 +8,10 @@ export default function addNewsTickerItem(element: HTMLElement, newsTicker: HTML
   padding: 0 2rem;
   font-size: 1.2rem;
   color: white;
+  position: absolute;
+  right: 0;
   `;
 
   newsTicker.appendChild(tickerItem); // Append tickerItem before starting the animation
-  animateTickerItem(tickerItem, newsTicker, 15000);
+  animateTickerItem(tickerItem, newsTicker);
 }

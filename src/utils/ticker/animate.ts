@@ -22,8 +22,10 @@
 //     requestAnimationFrame(step);
 // }
 
-export default function animateTickerItem(tickerItem: HTMLElement, newsTicker: HTMLElement, duration: number): void {
+export default function animateTickerItem(tickerItem: HTMLElement, newsTicker: HTMLElement): void {
+    const speed = 80; // Pixels per second
     const end: number = newsTicker.clientWidth + tickerItem.clientWidth;
+    const duration: number = end / speed * 1000; // Duration in milliseconds
 
     // Prepare the item for transition
     tickerItem.style.transition = 'none'; // Disable transitions
