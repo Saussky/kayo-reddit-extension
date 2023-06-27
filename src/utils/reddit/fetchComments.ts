@@ -4,19 +4,18 @@ import { prod } from '../../content'
 
 export async function getRedditComments(threadLink: string) {
     try {
-        let response = prod 
-        ? await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10&cacheBuster=${Date.now()}`) 
-        : await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10`);
-    
+        let response = prod
+            ? await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10&cacheBuster=${Date.now()}`)
+            : await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10`);
+
         const data = await response.json();
         const comments = await data[1].data.children;
         const time = Math.floor(Number(new Date()) / 1000);
 
-        console.log('api has been reached  ', time)
-
-        const formattedComments: redditComment[] = await comments.reduce((acc: redditComment[], comment: any) => {
-            if (comment.data.created_utc > (time - 600)) {
-                acc.push({
+        const formattedComments: redditComment[] = await comments.reduce((formattedCommentsAccumulator: redditComment[], comment: any) => {
+            // Check if comment.data.body is not undefined, then don't do the time check unless its in production
+            if (comment.data.body && (!prod || (prod && comment.data.created_utc > time))) {
+                formattedCommentsAccumulator.push({
                     id: comment.data.id,
                     username: comment.data.author,
                     comment: comment.data.body,
@@ -25,9 +24,8 @@ export async function getRedditComments(threadLink: string) {
                     flair: comment.data.author_flair_css_class,
                 });
             }
-            return acc;
+            return formattedCommentsAccumulator;
         }, []);
-
 
         return formattedComments.reverse();
     } catch (error) {

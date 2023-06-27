@@ -3,12 +3,9 @@ import formatSidebarComment from '../reddit/formatSidebarComment';
 import addNewsTickerItem from '../ticker/addItem';
 import formatTickerComment from '../reddit/formatTickerComment';
 import { getCommentsFromBackground } from '../reddit/fetchComments';
+import { sleep } from '../misc';
 import { prod } from '../../content';
 
-
-function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export default async function fetchAndDisplayComments(
     foundMatchingThread: string,
@@ -18,12 +15,14 @@ export default async function fetchAndDisplayComments(
 ) {
     // Fetches reddit comments from the background.ts file, which is necessary to not get blocked by CORS
     const comments: redditComment[] = await getCommentsFromBackground(foundMatchingThread)
+    console.log('kunt', comments)
     const newComments = comments.filter((comment) => !seenCommentIDs.has(comment.id));
 
     newComments.forEach((comment: redditComment) => {
         displayComment(comment, newsTicker, commentContainer)
-        seenCommentIDs.add(comment.id);
-        sleep(1000)
+        const delay = comment.comment.length * 10;  
+        seenCommentIDs.add(comment.id);        
+        sleep(1000 + delay)
     });
 
     newComments.forEach((comment) => seenCommentIDs.add(comment.id));

@@ -6,6 +6,9 @@ import teamColoursData from '../static/afl/teamColours.json'
 export const teamColours = teamColoursData as TeamLogos;
 export const redditFlairTeams = redditFlairTeamsData as RedditFlair
 
+export function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export function commonValues(kayo: string[], reddit: string[]): string[] {
     return kayo.filter((value) => reddit.includes(value));
