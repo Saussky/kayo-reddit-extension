@@ -9,7 +9,7 @@ export default function addNewsTickerItem(element: HTMLElement, newsTicker: HTML
   font-size: 1.2rem;
   color: white;
   position: absolute;
-  right: 0;
+  right: -30vw;
   `;
 
   newsTicker.appendChild(tickerItem); // Append tickerItem before starting the animation

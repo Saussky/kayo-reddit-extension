@@ -15,6 +15,8 @@ export default async function fetchAndDisplayComments(
 ) {
     // Fetches reddit comments from the background.ts file, which is necessary to not get blocked by CORS
     const comments: redditComment[] = await getCommentsFromBackground(foundMatchingThread)
+
+    // Checks to see if the comment has already been displayed 
     const newComments = comments.filter((comment) => {
         if (seenCommentIDs.has(comment.id)) {
             return false;
@@ -26,8 +28,12 @@ export default async function fetchAndDisplayComments(
 
     for (const comment of newComments) {
         displayComment(comment, newsTicker, commentContainer)
-        const delay = comment.comment.length * 10;  
-        await sleep(1000 + delay);
+
+        // Delays the ticker comments so they don't overlap but leaves the sidebar comments alone
+        if (document.fullscreenElement || !prod) {
+            const delay = comment.comment.length * 130;  
+            await sleep(delay);
+        }
     };
 };
 
@@ -39,10 +45,10 @@ function displayComment(comment: redditComment,
         const commentDiv = formatTickerComment(comment);
         addNewsTickerItem(commentDiv, newsTicker);
     } else {
-        if (!prod) {
-            const commentDivTest = formatTickerComment(comment);
-            addNewsTickerItem(commentDivTest, newsTicker);
-        }
+        // if (!prod) {
+        //     const commentDivTest = formatTickerComment(comment);
+        //     addNewsTickerItem(commentDivTest, newsTicker);
+        // }
 
         const commentDiv = formatSidebarComment(comment);
         commentContainer.insertBefore(commentDiv, commentContainer.firstChild);

@@ -12,7 +12,8 @@ export default function formatTickerComment(comment: redditComment): HTMLDivElem
   if (teamKey) {
     try {
       const svgNode = createTeamColorSVG(teamColours[teamKey]);
-      svgNode.style.marginRight = "2px";
+      svgNode.style.marginRight = "6px";
+      svgNode.style.marginTop = "20px";
       tickerItem.appendChild(svgNode);
     } catch (err) {
       console.error('Error while creating SVG:', err);
