@@ -4,8 +4,8 @@ import initSidebar from "./initSidebar";
 
 
 export default function initExtension(video: HTMLVideoElement, foundMatchingThread: string) {
-    const sidebarExists = document.getElementById('kayo-reddit-sidebar')
-    // if (sidebarExists) document.removeChild(sidebarExists)
+    const sidebar = document.getElementById('kayo-reddit-sidebar')
+    if (sidebar) document.removeChild(sidebar)
 
     const iframe: HTMLIFrameElement = document.createElement('iframe');
     iframe.id = 'kayo-reddit-sidebar';

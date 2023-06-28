@@ -9,7 +9,7 @@ export default async function initSidebar(
     foundMatchingThread: string
 ): Promise<void> {
     const commentContainer = iframe.contentDocument!.querySelector('#comments-container') as HTMLElement // Gets the extension from the DOM
-    const newsTicker: HTMLElement = createTicker(video); // Creates the news ticker
+    const newsTicker: HTMLElement = createTicker(video); // Creates the news ticker div
     let seenCommentIDs: Set<string> = new Set(); // Stores reddit comments via ID to check for repeats
 
     handleFullscreenChange(commentContainer, newsTicker); // Listens for fullscreen events

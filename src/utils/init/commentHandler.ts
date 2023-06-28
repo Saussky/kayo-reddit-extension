@@ -15,17 +15,20 @@ export default async function fetchAndDisplayComments(
 ) {
     // Fetches reddit comments from the background.ts file, which is necessary to not get blocked by CORS
     const comments: redditComment[] = await getCommentsFromBackground(foundMatchingThread)
-    console.log('kunt', comments)
-    const newComments = comments.filter((comment) => !seenCommentIDs.has(comment.id));
-
-    newComments.forEach((comment: redditComment) => {
-        displayComment(comment, newsTicker, commentContainer)
-        const delay = comment.comment.length * 10;  
-        seenCommentIDs.add(comment.id);        
-        sleep(1000 + delay)
+    const newComments = comments.filter((comment) => {
+        if (seenCommentIDs.has(comment.id)) {
+            return false;
+        } else {
+            seenCommentIDs.add(comment.id);
+            return true;
+        }
     });
 
-    newComments.forEach((comment) => seenCommentIDs.add(comment.id));
+    for (const comment of newComments) {
+        displayComment(comment, newsTicker, commentContainer)
+        const delay = comment.comment.length * 10;  
+        await sleep(1000 + delay);
+    };
 };
 
 function displayComment(comment: redditComment,
