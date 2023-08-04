@@ -2,7 +2,7 @@ import { redditComment } from "src/interfaces";
 import { prod } from '../../content'
 
 
-export async function getRedditComments(threadLink: string) {
+export async function getRedditComments(threadLink: string){
     try {
         let response = prod
             ? await fetch(`https://www.reddit.com/${threadLink}.json?sort=new&limit=10&cacheBuster=${Date.now()}`)
@@ -10,11 +10,14 @@ export async function getRedditComments(threadLink: string) {
 
         const data = await response.json();
         const comments = await data[1].data.children;
+        console.log('comments', comments[0])
+        console.log('comments', comments[1])
         const time = Math.floor(Number(new Date()) / 1000);
 
         const formattedComments: redditComment[] = await comments.reduce((formattedCommentsAccumulator: redditComment[], comment: any) => {
             // Check if comment.data.body is not undefined, then don't do the time check unless its in production
-            if (comment.data.body && (!prod || (prod && comment.data.created_utc > time))) {
+            if (comment.data.body) {
+                console.log('a')
                 formattedCommentsAccumulator.push({
                     id: comment.data.id,
                     username: comment.data.author,

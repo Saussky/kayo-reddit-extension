@@ -32,7 +32,7 @@ export const findMatchingThread = (kayoTeams: string[], redditThreads: string[])
     let foundMatchingThread: string = '';
     
     for (const thread of redditThreads) {
-        const game = extractTeamName(thread);
+        const game = extractTeamName(thread);      
 
         if (commonValues(kayoTeams, game).length >= 2) {
             foundMatchingThread = thread;

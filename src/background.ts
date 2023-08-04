@@ -26,6 +26,7 @@ chrome.runtime.onMessage.addListener((
         const redditComments = getRedditComments(threadLink)
 
         redditComments.then((threads) => {
+            console.log('cunt', threads)
             sendResponse(threads);
         });
 

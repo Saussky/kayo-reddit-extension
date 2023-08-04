@@ -15,7 +15,7 @@ export default async function initSidebar(
     handleFullscreenChange(commentContainer, newsTicker); // Listens for fullscreen events
     !prod && fetchAndDisplayComments(foundMatchingThread, newsTicker, commentContainer, seenCommentIDs)
 
-    setInterval(() => {
-        fetchAndDisplayComments(foundMatchingThread, newsTicker, commentContainer, seenCommentIDs)
-    }, 1000);
+    // setInterval(() => {
+    //     fetchAndDisplayComments(foundMatchingThread, newsTicker, commentContainer, seenCommentIDs)
+    // }, 1000);
 }
