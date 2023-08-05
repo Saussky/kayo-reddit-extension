@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "Kayo Reddit Sidebar",
+    "name": "Kayo Reddit Ticker",
     "version": "1.0.0",
-    "description": "A browser extension that adds a sidebar to Kayo that loads Reddit comments from a specific thread.",
+    "description": "A browser extension that adds a ticker to Kayo that loads Reddit comments from a specific thread.",
     "permissions": [
         "webNavigation",
         "activeTab",

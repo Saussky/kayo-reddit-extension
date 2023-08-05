@@ -1,17 +1,14 @@
 import animateTickerItem from "../ticker/animate";
 import addNewsTickerItem from "../ticker/addItem";
 import { deleteControlsContainer } from "./controls"
+import initTicker from "../init/initTicker";
 
-export default function handleFullscreenChange(commentContainer: HTMLElement, newsTicker: HTMLElement): void {
+export default function handleFullscreenChange(video: HTMLVideoElement, foundMatchingThread: string): void {
     document.addEventListener("fullscreenchange", () => {
         if (document.fullscreenElement) {
-            deleteControlsContainer()
-            commentContainer.style.display = "none";
-            newsTicker.style.display = "flex";
-
+            return
         } else {
-            commentContainer.style.display = "block";
-            newsTicker.style.display = "flex";
+            console.log('a')
         }
     });
 }
