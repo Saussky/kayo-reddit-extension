@@ -13,7 +13,6 @@ export default function createTicker(video: HTMLVideoElement): HTMLElement {
       align-items: center;
       white-space: nowrap;
       z-index: 999;
-      display: none;
       background-color: rgba(0, 0, 0, 0.09);
     `;
 
