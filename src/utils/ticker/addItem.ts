@@ -8,8 +8,14 @@ export default function addNewsTickerItem(element: HTMLElement, newsTicker: HTML
   font-size: 1.2rem;
   color: white;
   position: absolute;
-  right: -40vw;
+  right: 0;
   `;
+
+  newsTicker.appendChild(tickerItem); // Append tickerItem before starting the animation
+  const tickerWidth = tickerItem.getBoundingClientRect().width;
+
+  tickerItem.style.right = `-${tickerWidth + 20}px`; // Added 20px just for a little extra space
+
 
   const triggerDistance = window.innerWidth * 0.89; // 89% of screen width
 
@@ -23,6 +29,5 @@ export default function addNewsTickerItem(element: HTMLElement, newsTicker: HTML
     }
   }, 100);
 
-  newsTicker.appendChild(tickerItem); // Append tickerItem before starting the animation
   animateTickerItem(tickerItem, newsTicker);
 }

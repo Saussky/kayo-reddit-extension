@@ -1,5 +1,5 @@
 import initObserver from "./utils/init/initObserver";
 
 
-export const prod = false;
+export const prod = true;
 initObserver();
